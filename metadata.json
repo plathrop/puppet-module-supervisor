@@ -1,0 +1,10 @@
+{
+    "license": "BSD",
+    "author": "Paul Lathrop <plathrop@digg.com>",
+    "maintainer": "Paul Lathrop <paul@tertiusfamily.net>",
+    "version": "1.0",
+    "source": "git://github.com/plathrop/libpuppet-supervisor.git",
+    "project_page": "http://github.com/plathrop/libpuppet-supervisor",
+    "puppetversion": "0.25",
+    "summary": "Puppet module for configuring the supervisor daemon tool."
+}
