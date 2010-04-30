@@ -50,13 +50,13 @@ define supervisor::service(
 
     if $ensure != "purged" {
       service {
-        $name:
+        "supervisor::${name}":
           ensure => $ensure,
           provider => base,
-          restart => "/usr/bin/supervisorctl restart $name",
-          start => "/usr/bin/supervisorctl start $name",
+          restart => "/usr/bin/supervisorctl restart ${name}",
+          start => "/usr/bin/supervisorctl start ${name}",
           status => "/usr/bin/supervisorctl status | grep \"${name}.*RUNNING\"",
-          stop => "/usr/bin/supervisorctl stop $name",
+          stop => "/usr/bin/supervisorctl stop ${name}",
           require => [ Package["supervisor"], Service["supervisor"] ];
       }
     }
