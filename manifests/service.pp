@@ -55,7 +55,7 @@ define supervisor::service(
           provider => base,
           restart => "/usr/bin/supervisorctl restart ${name}",
           start => "/usr/bin/supervisorctl start ${name}",
-          status => "/usr/bin/supervisorctl status | grep \"${name}.*RUNNING\"",
+          status => "/usr/bin/supervisorctl status | grep \"^${name}[[:space:]]+RUNNING[[:space:]]+\"",
           stop => "/usr/bin/supervisorctl stop ${name}",
           require => [ Package["supervisor"], Service["supervisor"] ];
       }
