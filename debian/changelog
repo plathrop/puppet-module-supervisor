@@ -1,4 +1,4 @@
-libpuppet-supervisor (1.0.0) stable; urgency=low
+puppet-module-supervisor (1.0.0) stable; urgency=low
 
   * Initial release.
 
