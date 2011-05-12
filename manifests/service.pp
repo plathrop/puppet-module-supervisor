@@ -57,7 +57,7 @@ define supervisor::service(
           start => "/usr/bin/supervisorctl start ${name}",
           status => "/usr/bin/supervisorctl status | awk '/^${name}/{print \$2}' | grep '^RUNNING$'",
           stop => "/usr/bin/supervisorctl stop ${name}",
-          require => [ Package["supervisor"], Service["supervisor"], $require ];
+          require => [ Package["supervisor"], Service["supervisor"] ];
       }
     }
   }
