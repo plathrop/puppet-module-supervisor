@@ -4,8 +4,23 @@ class supervisor {
       ensure => installed;
   }
 
+  $supervisor_conf_file = $operatingsystem ? {
+        /(Ubuntu|Debian)/ => "/etc/supervisor/supervisord.conf",
+        /(Fedora|CentOS)/ => "/etc/supervisord.conf",
+  }
+
+  $supervisor_conf_dir = $operatingsystem ? {
+        /(Ubuntu|Debian)/ => "/etc/supervisor",
+        /(Fedora|CentOS)/ => "/etc/supervisord.d",
+  }
+
+  $supervisor_system_service = $operatingsystem ? {
+        /(Ubuntu|Debian)/ => "supervisor",
+        /(Fedora|CentOS)/ => "supervisord",
+  }
+
   file {
-    "/etc/supervisor":
+    "$supervisor_conf_dir":
       purge => true,
       ensure => directory,
       require => Package["supervisor"];
@@ -15,21 +30,20 @@ class supervisor {
        backup => false,
        ensure => directory,
        require => Package["supervisor"];
-     "/etc/supervisor/supervisord.conf":
-       source => "puppet:///supervisor/supervisord.conf",
+     "$supervisor_conf_file":
+       content => template("supervisor/supervisord.conf.erb"),
        require => Package["supervisor"];
      "/etc/logrotate.d/supervisor":
-       source => "puppet:///supervisor/logrotate",
+       source => "puppet:///modules/supervisor/logrotate",
        require => Package["supervisor"];
   }
 
   service {
-    "supervisor":
+    "$supervisor_system_service":
       enable => true,
       ensure => running,
-      hasrestart => false,
-      require => Package["supervisor"],
-      pattern => "/usr/bin/supervisord";
+      hasrestart => true,
+      require => Package["supervisor"];
   }
 
   exec {
@@ -37,6 +51,6 @@ class supervisor {
       command => "/usr/bin/supervisorctl update",
       logoutput => on_failure,
       refreshonly => true,
-      require => Service["supervisor"];
+      require => Service["$supervisor_system_service"];
   }
 }
