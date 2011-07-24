@@ -20,14 +20,14 @@ define supervisor::service(
     }
 
     file {
-      "/etc/supervisor/${name}.ini":
+      "$supervisor_conf_dir/${name}.ini":
         content => $enable ? {
           true => template("supervisor/service.ini.erb"),
           default => undef },
         ensure => $enable ? {
           false => absent,
           default => undef },
-        require => File["/etc/supervisor", "/var/log/supervisor/${name}"],
+        require => File["$supervisor_conf_dir", "/var/log/supervisor/${name}"],
         notify => Exec["supervisor::update"];
       "/var/log/supervisor/${name}":
         owner => $user ? {
@@ -57,7 +57,7 @@ define supervisor::service(
           start => "/usr/bin/supervisorctl start ${name}",
           status => "/usr/bin/supervisorctl status | awk '/^${name}/{print \$2}' | grep '^RUNNING$'",
           stop => "/usr/bin/supervisorctl stop ${name}",
-          require => [ Package["supervisor"], Service["supervisor"] ];
+          require => [ Package["supervisor"], Service["$supervisor_system_service"] ];
       }
     }
   }
