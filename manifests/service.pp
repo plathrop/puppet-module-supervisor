@@ -27,7 +27,7 @@ define supervisor::service(
         content => $enable ? {
           true => template('supervisor/service.ini.erb'),
           default => undef },
-        require => File[$supervisor::supervisor_conf_dir, '/var/log/supervisor/${name}'],
+        require => File[$supervisor::supervisor_conf_dir, "/var/log/supervisor/${name}"],
         notify => Exec['supervisor::update'];
       "/var/log/supervisor/${name}":
         ensure => $ensure ? {
