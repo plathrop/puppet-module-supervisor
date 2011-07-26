@@ -42,7 +42,9 @@ class supervisor {
     $supervisor_system_service:
       ensure     => running,
       enable     => true,
-      hasrestart => true,
+      hasrestart => false,
+      status     => "/usr/bin/supervisorctl pid",
+      stop       => "/usr/bin/supervisorctl shutdown && sleep 5",
       require    => Package['supervisor'];
   }
 
@@ -51,6 +53,6 @@ class supervisor {
       command     => '/usr/bin/supervisorctl update',
       logoutput   => on_failure,
       refreshonly => true,
-      require     => Service[$supervisor_system_service];
+      subscribe   => Service[$supervisor_system_service];
   }
 }
