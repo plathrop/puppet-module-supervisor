@@ -32,7 +32,8 @@ class supervisor {
       require => Package['supervisor'];
     $supervisor_conf_file:
       content => template('supervisor/supervisord.conf.erb'),
-      require => Package['supervisor'];
+      require => Package['supervisor'],
+      notify  => Service[$supervisor_system_service];
     '/etc/logrotate.d/supervisor':
       source => 'puppet:///modules/supervisor/logrotate',
       require => Package['supervisor'];
