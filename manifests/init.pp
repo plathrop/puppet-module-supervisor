@@ -32,7 +32,8 @@ class supervisor {
       require => Package['supervisor'];
     $supervisor_conf_file:
       content => template('supervisor/supervisord.conf.erb'),
-      require => Package['supervisor'];
+      require => Package['supervisor'],
+      notify  => Service[$supervisor_system_service];
     '/etc/logrotate.d/supervisor':
       source => 'puppet:///modules/supervisor/logrotate',
       require => Package['supervisor'];
@@ -42,7 +43,10 @@ class supervisor {
     $supervisor_system_service:
       ensure     => running,
       enable     => true,
-      hasrestart => true,
+      hasrestart => false,
+      start      => "sleep 5 && /etc/init.d/supervisor start",
+      status     => "/usr/bin/supervisorctl pid",
+      stop       => "/usr/bin/supervisorctl shutdown && sleep 5",
       require    => Package['supervisor'];
   }
 
@@ -51,6 +55,6 @@ class supervisor {
       command     => '/usr/bin/supervisorctl update',
       logoutput   => on_failure,
       refreshonly => true,
-      require     => Service[$supervisor_system_service];
+      subscribe   => Service[$supervisor_system_service];
   }
 }
