@@ -48,7 +48,7 @@ define supervisor::service(
           default => false };
     }
 
-    if $ensure == 'running' {
+    if ($ensure == 'running' or $ensure == 'stopped') {
       service {
         "supervisor::${name}":
           ensure   => $ensure,
