@@ -1,5 +1,5 @@
 define supervisor::service(
-  $enable=true, $ensure=running,
+  $enable=true, $ensure=present,
   $command, $numprocs=1, $priority=999,
   $autorestart='unexpected',
   $startsecs=1, $retries=3, $exitcodes='0,2',
@@ -48,7 +48,7 @@ define supervisor::service(
           default => false };
     }
 
-    if $ensure != 'purged' {
+    if ($ensure == 'running' or $ensure == 'stopped') {
       service {
         "supervisor::${name}":
           ensure   => $ensure,
