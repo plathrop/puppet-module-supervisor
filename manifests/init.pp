@@ -1,5 +1,5 @@
 class supervisor {
-  if ! defined(Package['supervisor']) { Package {'supervisor': ensure => installed}}
+  if ! defined(Package['supervisor']) { package {'supervisor': ensure => installed}}
 
 
   $supervisor_conf_file = $operatingsystem ? {
