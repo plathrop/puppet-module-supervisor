@@ -11,7 +11,6 @@ define supervisor::service(
   $stderr_logfile_maxsize='250MB', $stderr_logfile_keep=10,
   $environment='', $chdir='', $umask='') {
 
-    include supervisor
 
     $autostart = $ensure ? {
       running => true,
