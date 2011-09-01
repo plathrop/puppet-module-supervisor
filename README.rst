@@ -5,6 +5,8 @@ Install into `module_path>/supervisor`
 
 Example usage::
 
+  include supervisor
+
   supervisor::service {
     'scribe':
       ensure      => running,
