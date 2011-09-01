@@ -1,8 +1,6 @@
 class supervisor {
-  package {
-    supervisor:
-      ensure => installed;
-  }
+  if ! defined(Package['supervisor']) { package {'supervisor': ensure => installed}}
+
 
   $supervisor_conf_file = $operatingsystem ? {
     /(Ubuntu|Debian)/ => '/etc/supervisor/supervisord.conf',
