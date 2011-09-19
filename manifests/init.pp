@@ -2,23 +2,23 @@ class supervisor {
   if ! defined(Package['supervisor']) { package {'supervisor': ensure => installed}}
 
 
-  $supervisor_conf_file = $operatingsystem ? {
+  $conf_file = $operatingsystem ? {
     /(Ubuntu|Debian)/ => '/etc/supervisor/supervisord.conf',
     /(Fedora|CentOS)/ => '/etc/supervisord.conf',
   }
 
-  $supervisor_conf_dir = $operatingsystem ? {
+  $conf_dir = $operatingsystem ? {
     /(Ubuntu|Debian)/ => '/etc/supervisor',
     /(Fedora|CentOS)/ => '/etc/supervisord.d',
   }
 
-  $supervisor_system_service = $operatingsystem ? {
+  $system_service = $operatingsystem ? {
     /(Ubuntu|Debian)/ => 'supervisor',
     /(Fedora|CentOS)/ => 'supervisord',
   }
 
   file {
-    $supervisor_conf_dir:
+    $conf_dir:
       ensure  => directory,
       purge   => true,
       require => Package['supervisor'];
@@ -28,17 +28,17 @@ class supervisor {
       purge   => true,
       backup  => false,
       require => Package['supervisor'];
-    $supervisor_conf_file:
+    $conf_file:
       content => template('supervisor/supervisord.conf.erb'),
       require => Package['supervisor'],
-      notify  => Service[$supervisor_system_service];
+      notify  => Service[$system_service];
     '/etc/logrotate.d/supervisor':
       source => 'puppet:///modules/supervisor/logrotate',
       require => Package['supervisor'];
   }
 
   service {
-    $supervisor_system_service:
+    $system_service:
       ensure     => running,
       enable     => true,
       hasrestart => true,
@@ -50,6 +50,6 @@ class supervisor {
       command     => '/usr/bin/supervisorctl update',
       logoutput   => on_failure,
       refreshonly => true,
-      require     => Service[$supervisor_system_service];
+      require     => Service[$system_service];
   }
 }
