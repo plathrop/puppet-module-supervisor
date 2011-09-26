@@ -1,48 +1,38 @@
 class supervisor {
-  if ! defined(Package['supervisor']) { package {'supervisor': ensure => installed}}
+  include supervisor::params
 
-
-  $conf_file = $operatingsystem ? {
-    /(Ubuntu|Debian)/ => '/etc/supervisor/supervisord.conf',
-    /(Fedora|CentOS)/ => '/etc/supervisord.conf',
-  }
-
-  $conf_dir = $operatingsystem ? {
-    /(Ubuntu|Debian)/ => '/etc/supervisor',
-    /(Fedora|CentOS)/ => '/etc/supervisord.d',
-  }
-
-  $system_service = $operatingsystem ? {
-    /(Ubuntu|Debian)/ => 'supervisor',
-    /(Fedora|CentOS)/ => 'supervisord',
+  if ! defined(Package[$supervisor::params::package]) { 
+    package {"${supervisor::params::package}":
+      ensure => installed
+    }
   }
 
   file {
-    $conf_dir:
+    $supervisor::params::conf_dir:
       ensure  => directory,
       purge   => true,
-      require => Package['supervisor'];
+      require => Package[$supervisor::params::package];
     ['/var/log/supervisor',
      '/var/run/supervisor']:
       ensure  => directory,
       purge   => true,
       backup  => false,
-      require => Package['supervisor'];
-    $conf_file:
+      require => Package[$supervisor::params::package];
+    $supervisor::params::conf_file:
       content => template('supervisor/supervisord.conf.erb'),
-      require => Package['supervisor'],
-      notify  => Service[$system_service];
+      require => Package[$supervisor::params::package],
+      notify  => Service[$supervisor::params::system_service];
     '/etc/logrotate.d/supervisor':
       source => 'puppet:///modules/supervisor/logrotate',
-      require => Package['supervisor'];
+      require => Package[$supervisor::params::package];
   }
 
   service {
-    $system_service:
+    $supervisor::params::system_service:
       ensure     => running,
       enable     => true,
       hasrestart => true,
-      require    => Package['supervisor'];
+      require    => Package[$supervisor::params::package];
   }
 
   exec {
@@ -50,6 +40,6 @@ class supervisor {
       command     => '/usr/bin/supervisorctl update',
       logoutput   => on_failure,
       refreshonly => true,
-      require     => Service[$system_service];
+      require     => Service[$supervisor::params::system_service];
   }
 }
