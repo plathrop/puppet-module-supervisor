@@ -12,6 +12,10 @@ class supervisor {
       ensure  => directory,
       purge   => true,
       require => Package[$supervisor::params::package];
+    $supervisor::params::ini_dir:
+      ensure  => directory,
+      purge   => true,
+      require => File[$supervisor::params::conf_dir];
     ['/var/log/supervisor',
      '/var/run/supervisor']:
       ensure  => directory,

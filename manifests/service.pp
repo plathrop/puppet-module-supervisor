@@ -19,7 +19,7 @@ define supervisor::service(
     }
 
     file {
-      "${supervisor::params::ini_dir}/${name}.ini":
+      "${supervisor::params::ini_dir}/${name}.${supervisor::params::conf_ext}":
         ensure => $enable ? {
           false => absent,
           default => undef },
