@@ -19,14 +19,14 @@ define supervisor::service(
     }
 
     file {
-      "${supervisor::params::conf_dir}/${name}.ini":
+      "${supervisor::params::ini_dir}/${name}.ini":
         ensure => $enable ? {
           false => absent,
           default => undef },
         content => $enable ? {
           true => template('supervisor/service.ini.erb'),
           default => undef },
-        require => File[$supervisor::params::conf_dir, "/var/log/supervisor/${name}"],
+        require => File[$supervisor::params::ini_dir, "/var/log/supervisor/${name}"],
         notify => Exec['supervisor::update'];
       "/var/log/supervisor/${name}":
         ensure => $ensure ? {
