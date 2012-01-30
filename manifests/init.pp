@@ -1,7 +1,7 @@
 class supervisor {
   include supervisor::params
 
-  if ! defined(Package[$supervisor::params::package]) { 
+  if ! defined(Package[$supervisor::params::package]) {
     package {"${supervisor::params::package}":
       ensure => installed
     }
@@ -23,7 +23,7 @@ class supervisor {
       require => Package[$supervisor::params::package],
       notify  => Service[$supervisor::params::system_service];
     '/etc/logrotate.d/supervisor':
-      source => 'puppet:///modules/supervisor/logrotate',
+      source => 'puppet:///supervisor/logrotate',
       require => Package[$supervisor::params::package];
   }
 
