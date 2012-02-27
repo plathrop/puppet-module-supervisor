@@ -47,15 +47,21 @@ define supervisor::service(
           default => false };
     }
 
+    if $numprocs > 1 {
+        $process_name = "${name}:*"
+    } else {
+        $process_name = $name
+    }
+
     if ($ensure == 'running' or $ensure == 'stopped') {
       service {
         "supervisor::${name}":
           ensure   => $ensure,
           provider => base,
-          restart  => "/usr/bin/supervisorctl restart ${name}",
-          start    => "/usr/bin/supervisorctl start ${name}",
-          status   => "/usr/bin/supervisorctl status | awk '/^${name}/{print \$2}' | grep '^RUNNING$'",
-          stop     => "/usr/bin/supervisorctl stop ${name}",
+          restart  => "/usr/bin/supervisorctl restart ${process_name}",
+          start    => "/usr/bin/supervisorctl start ${process_name}",
+          status   => "/usr/bin/supervisorctl status | awk '/^${name}[: ]/{print \$2}' | grep '^RUNNING$'",
+          stop     => "/usr/bin/supervisorctl stop ${process_name}",
           require  => [ Package['supervisor'], Service[$supervisor::params::system_service] ];
       }
     }
