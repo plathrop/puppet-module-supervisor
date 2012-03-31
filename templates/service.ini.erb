@@ -13,6 +13,12 @@ startretries=<%= retries %>
 exitcodes=<%= exitcodes %>
 stopsignal=<%= stopsignal %>
 stopwaitsecs=<%= stopwait %>
+<% unless directory == "" -%>
+directory=<%= directory %>
+<% end -%>
+<% unless stopsignal == "" -%>
+stopsignal=<%= stopsignal %>
+<% end -%>
 <% unless user == "" -%>
 user=<%= user %>
 <% end -%>
