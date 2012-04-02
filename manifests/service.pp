@@ -6,7 +6,6 @@ define supervisor::service(
   $stopsignal='TERM', $stopwait=10, $user='',
   $group='', $redirect_stderr=false,
   $directory='',
-  $stopsignal='',
   $stdout_logfile='',
   $stdout_logfile_maxsize='250MB', $stdout_logfile_keep=10,
   $stderr_logfile='',
