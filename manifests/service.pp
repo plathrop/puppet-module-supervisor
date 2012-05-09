@@ -34,7 +34,7 @@ define supervisor::service (
       $dir_force = true
       $service_ensure = 'stopped'
     }
-    present: {
+    default: {
       $autostart = true
       $dir_ensure = 'directory'
       $dir_recurse = false
