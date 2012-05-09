@@ -1,5 +1,5 @@
 class supervisor::params {
-  case $operatingsystem {
+  case $::operatingsystem {
     'ubuntu','debian': {
       $conf_file = '/etc/supervisor/supervisord.conf'
       $conf_dir = '/etc/supervisor'
@@ -11,6 +11,9 @@ class supervisor::params {
       $conf_dir = '/etc/supervisord.d'
       $system_service = 'supervisord'
       $package = 'supervisor'
+    }
+    default: {
+      fail("Unsupported platform: ${::operatingsystem}")
     }
   }
 }
