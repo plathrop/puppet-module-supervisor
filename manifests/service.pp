@@ -27,14 +27,14 @@ define supervisor::service (
   include supervisor::params
 
   case $ensure {
-    absent, purged: {
+    absent: {
       $autostart = false
       $dir_ensure = 'absent'
       $dir_recurse = true
       $dir_force = true
       $service_ensure = 'stopped'
     }
-    present, running: {
+    present: {
       $autostart = true
       $dir_ensure = 'directory'
       $dir_recurse = false
@@ -46,6 +46,9 @@ define supervisor::service (
       } else {
         $config_ensure = absent
       }
+    }
+    default: {
+      fail("ensure must be 'present' or 'absent', not ${ensure}")
     }
   }
 
