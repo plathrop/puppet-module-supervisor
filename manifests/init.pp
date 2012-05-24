@@ -1,10 +1,105 @@
+# Class: supervisor
+#
+# This module manages supervisor
+#
+# Parameters:
+#   [*ensure*]
+#     Ensure if present or absent.
+#     Default: present
+#
+#   [*autoupgrade*]
+#     Upgrade package automatically, if there is a newer version.
+#     Default: false
+#
+#   [*service_ensure*]
+#     Ensure if service is running or stopped.
+#     Default: running
+#
+#   [*service_enable*]
+#     Start service at boot.
+#     Default: true
+#
+#   [*enable_inet_server*]
+#     Enable inet_http_server.
+#     Default: false
+#
+#   [*inet_server_port*]
+#     inet_http_server ip:port to listen on.
+#     Only used if inet_http_server is set to true.
+#     Default: *:9000
+#
+#   [*inet_server_user*]
+#     If set, this is the name of the user to authenticate as.
+#     Only used if inet_http_server is set to true.
+#     Default: undef
+#
+#   [*inet_server_password*]
+#     Password for the inet_http_server.
+#     Only used if inet_http_server is set to true and inet_server_user is set.
+#     Default: undef
+#
+#   [*logfile*]
+#     Main log file.
+#     Default: /var/log/supervisor/supervisord.log
+#
+#   [*logfile_maxbytes*]
+#     The maximum number of bytes that may be consumed by the activity log
+#     file before it is rotated.
+#     Default: 500MB
+#
+#   [*logfile_backups*]
+#     The number of backups to keep around resulting from activity log
+#     file rotation.
+#     Default: 10
+#
+#   [*minfds*]
+#     The minimum number of file descriptors that must be available before
+#     supervisord will start successfully.
+#     Default: 1024
+#
+#   [*minprocs*]
+#     The minimum number of process descriptors that must be available before
+#     supervisord will start successfully.
+#     Default: 200
+#
+#   [*childlogdir*]
+#     The directory used for AUTO child log files.
+#     Default: /var/log/supervisor
+#
+#   [*user*]
+#     If supervisord is run as the root user, switch users to this UNIX user
+#     account before doing any meaningful processing.
+#     Default: undef
+#
+#   [*umask*]
+#     The umask of the supervisord process.
+#     Default: 022
+#
+#   [*supervisor_environment*]
+#     A list of key/value pairs in the form KEY=val,KEY2=val2 that will be
+#     placed in the supervisord process’ environment.
+#     Default: undef
+#
+#   [*identifier*]
+#     The identifier string for this supervisor process,
+#     used by the RPC interface.
+#     Default: undef
+#
+# Actions:
+#   Installs supervisor.
+#
+# Sample Usage:
+#   class { 'supervisor': }
+#
+#
+# [Remember: No empty lines between comments and class definition]
 class supervisor(
   $ensure = 'present',
   $autoupgrade = false,
   $service_ensure = 'running',
   $service_enable = true,
   $enable_inet_server = false,
-  $inet_server_port = 9000,
+  $inet_server_port = '*:9000',
   $inet_server_user = undef,
   $inet_server_pass = undef,
   $logfile = '/var/log/supervisor/supervisord.log',
