@@ -21,16 +21,16 @@ user=<%= user %>
 <% end -%>
 redirect_stderr=<%= redirect_stderr %>
 <% if @stdout_logfile -%>
-stdout_logfile=/var/log/supervisor/<%= name -%>/<%= name -%>.out
-<% else -%>
 stdout_logfile=<%= stdout_logfile %>
+<% else -%>
+stdout_logfile=/var/log/supervisor/<%= name -%>/<%= name -%>.out
 <% end -%>
 stdout_logfile_maxbytes=<%= stdout_logfile_maxsize %>
 stdout_logfile_backups=<%= stdout_logfile_keep %>
 <% if @stderr_logfile -%>
-stderr_logfile=/var/log/supervisor/<%= name -%>/<%= name -%>.err
-<% else -%>
 stderr_logfile=<%= stderr_logfile %>
+<% else -%>
+stderr_logfile=/var/log/supervisor/<%= name -%>/<%= name -%>.err
 <% end -%>
 stderr_logfile_maxbytes=<%= stderr_logfile_maxsize %>
 stderr_logfile_backups=<%= stderr_logfile_keep %>
