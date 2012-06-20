@@ -13,16 +13,15 @@ define supervisor::service (
   $user='root',
   $group='root',
   $redirect_stderr=false,
-  $directory='',
-  $stdout_logfile='',
+  $directory=undef,
+  $stdout_logfile=undef,
   $stdout_logfile_maxsize='250MB',
   $stdout_logfile_keep=10,
-  $stderr_logfile='',
+  $stderr_logfile=undef,
   $stderr_logfile_maxsize='250MB',
   $stderr_logfile_keep=10,
-  $environment='',
-  $chdir='',
-  $umask=''
+  $environment=undef,
+  $umask=undef
 ) {
   include supervisor::params
 
