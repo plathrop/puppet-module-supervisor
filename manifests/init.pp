@@ -105,7 +105,7 @@ class supervisor(
   $logfile = '/var/log/supervisor/supervisord.log',
   $logfile_maxbytes = '500MB',
   $logfile_backups = 10,
-  $loglevel = 'info',
+  $log_level = 'info',
   $minfds = 1024,
   $minprocs = 200,
   $childlogdir = '/var/log/supervisor',
