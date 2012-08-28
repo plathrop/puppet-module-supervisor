@@ -3,6 +3,7 @@ define supervisor::service (
   $ensure=present,
   $enable=true,
   $numprocs=1,
+  $numprocs_start=0,
   $priority=999,
   $autorestart='unexpected',
   $startsecs=1,
