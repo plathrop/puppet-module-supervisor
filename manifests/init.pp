@@ -116,6 +116,8 @@ class supervisor(
   $identifier = undef
 ) inherits supervisor::params {
 
+  include supervisor::update
+
   case $ensure {
     present: {
       if $autoupgrade == true {
@@ -172,7 +174,7 @@ class supervisor(
   file { $supervisor::params::conf_file:
     ensure  => $file_ensure,
     content => template('supervisor/supervisord.conf.erb'),
-    require => Package[$supervisor::params::package],
+    require => File[$supervisor::params::conf_dir],
     notify  => Service[$supervisor::params::system_service],
   }
 
@@ -186,13 +188,6 @@ class supervisor(
     ensure     => $service_ensure_real,
     enable     => $service_enable,
     hasrestart => true,
-    require    => Package[$supervisor::params::package],
-  }
-
-  exec { 'supervisor::update':
-    command     => '/usr/bin/supervisorctl update',
-    logoutput   => on_failure,
-    refreshonly => true,
-    require     => Service[$supervisor::params::system_service],
+    require    => File[$supervisor::params::conf_file],
   }
 }
