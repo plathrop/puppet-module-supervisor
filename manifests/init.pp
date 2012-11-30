@@ -85,6 +85,10 @@
 #     used by the RPC interface.
 #     Default: undef
 #
+#   [*recurse_config_dir*]
+#     Remove unmanaged files from config directory.
+#     Default: false
+#
 # Actions:
 #   Installs supervisor.
 #
