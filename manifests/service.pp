@@ -24,7 +24,7 @@ define supervisor::service (
   $environment=undef,
   $umask=undef
 ) {
-  include supervisor::params
+  include supervisor
 
   case $ensure {
     absent: {
@@ -58,16 +58,6 @@ define supervisor::service (
     $process_name = $name
   }
 
-  file { "${supervisor::params::conf_dir}/${name}.ini":
-    ensure  => $config_ensure,
-    content => template('supervisor/service.ini.erb'),
-    require => File[
-      $supervisor::params::conf_dir,
-      "/var/log/supervisor/${name}"
-    ],
-    notify  => Exec['supervisor::update'],
-  }
-
   file { "/var/log/supervisor/${name}":
     ensure  => $dir_ensure,
     owner   => $user,
@@ -75,6 +65,14 @@ define supervisor::service (
     mode    => '0750',
     recurse => $dir_recurse,
     force   => $dir_force,
+    require => Class['supervisor'],
+  }
+
+  file { "${supervisor::params::conf_dir}/${name}.ini":
+    ensure  => $config_ensure,
+    content => template('supervisor/service.ini.erb'),
+    require => File["/var/log/supervisor/${name}"],
+    notify  => Class['supervisor::update'],
   }
 
   service { "supervisor::${name}":
@@ -84,6 +82,6 @@ define supervisor::service (
     start    => "/usr/bin/supervisorctl start ${process_name}",
     status   => "/usr/bin/supervisorctl status | awk '/^${name}[: ]/{print \$2}' | grep '^RUNNING$'",
     stop     => "/usr/bin/supervisorctl stop ${process_name}",
-    require  => Service[$supervisor::params::system_service],
+    require  => File["${supervisor::params::conf_dir}/${name}.ini"],
   }
 }
