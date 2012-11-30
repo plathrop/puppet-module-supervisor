@@ -113,7 +113,8 @@ class supervisor(
   $user = undef,
   $umask = '022',
   $supervisor_environment = undef,
-  $identifier = undef
+  $identifier = undef,
+  $recurse_config_dir = false
 ) inherits supervisor::params {
 
   include supervisor::update
@@ -158,6 +159,7 @@ class supervisor(
   file { $supervisor::params::conf_dir:
     ensure  => $dir_ensure,
     purge   => true,
+    recurse => $recurse_config_dir,
     require => Package[$supervisor::params::package],
   }
 
