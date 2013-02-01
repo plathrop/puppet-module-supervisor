@@ -20,6 +20,12 @@ directory=<%= directory %>
 <% if @user -%>
 user=<%= user %>
 <% end -%>
+<% if @stopasgroup %>
+stopasgroup=<%= stopasgroup %>
+<% end -%>
+<% if @killasgroup %>
+killasgroup=<%= killasgroup %>
+<% end -%>
 redirect_stderr=<%= redirect_stderr %>
 <% if @stdout_logfile -%>
 stdout_logfile=<%= stdout_logfile %>
