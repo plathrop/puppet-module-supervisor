@@ -12,6 +12,8 @@ define supervisor::service (
   $stopsignal='TERM',
   $stopwait=10,
   $user='root',
+  $stopasgroup=false,
+  $killasgroup=false,
   $group='root',
   $redirect_stderr=false,
   $directory=undef,
