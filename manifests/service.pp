@@ -68,9 +68,9 @@ define supervisor::service (
     require => Class['supervisor'],
   }
 
-  file { "${supervisor::params::conf_dir}/${name}.ini":
+  file { "${supervisor::params::conf_dir}/${name}.conf":
     ensure  => $config_ensure,
-    content => template('supervisor/service.ini.erb'),
+    content => template('supervisor/service.conf.erb'),
     require => File["/var/log/supervisor/${name}"],
     notify  => Class['supervisor::update'],
   }
@@ -82,6 +82,6 @@ define supervisor::service (
     start    => "/usr/bin/supervisorctl start ${process_name}",
     status   => "/usr/bin/supervisorctl status | awk '/^${name}[: ]/{print \$2}' | grep '^RUNNING$'",
     stop     => "/usr/bin/supervisorctl stop ${process_name}",
-    require  => File["${supervisor::params::conf_dir}/${name}.ini"],
+    require  => File["${supervisor::params::conf_dir}/${name}.conf"],
   }
 }
