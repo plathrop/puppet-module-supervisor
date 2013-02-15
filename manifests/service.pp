@@ -1,28 +1,40 @@
+# Actions:
+#   Set up a daemon to be run by supervisor
+#
+# Sample Usage:
+#  supervisor::service { 'organizational_worker':
+#    command         => '/usr/bin/php /var/www/vhosts/site/gearman/worker.php',
+#    numprocs        => 2,
+#    numprocs_start  => 1,
+#    user            => 'org_user',
+#    group           => 'org_group',
+#  }
+#
 define supervisor::service (
   $command,
-  $ensure=present,
-  $enable=true,
-  $numprocs=1,
-  $numprocs_start=0,
-  $priority=999,
-  $autorestart='unexpected',
-  $startsecs=1,
-  $retries=3,
-  $exitcodes='0,2',
-  $stopsignal='TERM',
-  $stopwait=10,
-  $user='root',
-  $group='root',
-  $redirect_stderr=false,
-  $directory=undef,
-  $stdout_logfile=undef,
-  $stdout_logfile_maxsize='250MB',
-  $stdout_logfile_keep=10,
-  $stderr_logfile=undef,
-  $stderr_logfile_maxsize='250MB',
-  $stderr_logfile_keep=10,
-  $environment=undef,
-  $umask=undef
+  $ensure                   = present,
+  $enable                   = true,
+  $numprocs                 = 1,
+  $numprocs_start           = 0,
+  $priority                 = 999,
+  $autorestart              = 'unexpected',
+  $startsecs                = 1,
+  $retries                  = 3,
+  $exitcodes                = '0,2',
+  $stopsignal               = 'TERM',
+  $stopwait                 = 10,
+  $user                     = 'root',
+  $group                    = 'root',
+  $redirect_stderr          = false,
+  $directory                = undef,
+  $stdout_logfile           = undef,
+  $stdout_logfile_maxsize   = '250MB',
+  $stdout_logfile_keep      = 10,
+  $stderr_logfile           = undef,
+  $stderr_logfile_maxsize   = '250MB',
+  $stderr_logfile_keep      = 10,
+  $environment              = undef,
+  $umask                    = undef
 ) {
   include supervisor
 

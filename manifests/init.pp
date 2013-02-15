@@ -95,30 +95,31 @@
 # Sample Usage:
 #   class { 'supervisor': }
 #
+# Notes:
+#   You should always invoke the supervisor::service definition instead. Check that readme.
 #
-# [Remember: No empty lines between comments and class definition]
 class supervisor(
-  $ensure = 'present',
-  $autoupgrade = false,
-  $service_ensure = 'running',
-  $service_enable = true,
-  $enable_inet_server = false,
-  $inet_server_port = '*:9000',
-  $inet_server_user = undef,
-  $inet_server_pass = undef,
-  $logfile = '/var/log/supervisor/supervisord.log',
-  $logfile_maxbytes = '500MB',
-  $logfile_backups = 10,
-  $log_level = 'info',
-  $minfds = 1024,
-  $minprocs = 200,
-  $childlogdir = '/var/log/supervisor',
-  $nocleanup = false,
-  $user = undef,
-  $umask = '022',
-  $supervisor_environment = undef,
-  $identifier = undef,
-  $recurse_config_dir = false
+  $ensure                   = 'present',
+  $autoupgrade              = false,
+  $service_ensure           = 'running',
+  $service_enable           = true,
+  $enable_inet_server       = false,
+  $inet_server_port         = '*:9000',
+  $inet_server_user         = undef,
+  $inet_server_pass         = undef,
+  $logfile                  = '/var/log/supervisor/supervisord.log',
+  $logfile_maxbytes         = '500MB',
+  $logfile_backups          = 10,
+  $log_level                = 'info',
+  $minfds                   = 1024,
+  $minprocs                 = 200,
+  $childlogdir              = '/var/log/supervisor',
+  $nocleanup                = false,
+  $user                     = undef,
+  $umask                    = '022',
+  $supervisor_environment   = undef,
+  $identifier               = undef,
+  $recurse_config_dir       = false
 ) inherits supervisor::params {
 
   include supervisor::update
