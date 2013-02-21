@@ -157,7 +157,8 @@ class supervisor(
 
   if ! defined(Package[$supervisor::params::package]) {
     package { $supervisor::params::package:
-      ensure => $package_ensure,
+      ensure   => $package_ensure,
+      provider => pip,
     }
   }
 
@@ -165,6 +166,12 @@ class supervisor(
     ensure  => $dir_ensure,
     purge   => true,
     recurse => $recurse_config_dir,
+    require => Package[$supervisor::params::package],
+  }
+
+  file { $supervisor::params::init_file:
+    ensure  => $file_ensure,
+    source  => 'puppet:///modules/supervisor/supervisord.conf',
     require => Package[$supervisor::params::package],
   }
 
@@ -195,6 +202,6 @@ class supervisor(
     ensure     => $service_ensure_real,
     enable     => $service_enable,
     hasrestart => true,
-    require    => File[$supervisor::params::conf_file],
+    require    => File[$supervisor::params::conf_file, $supervisor::params::init_file],
   }
 }
