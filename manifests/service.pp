@@ -24,6 +24,8 @@ define supervisor::service (
   $stopsignal               = 'TERM',
   $stopwait                 = 10,
   $user                     = 'root',
+  $stopasgroup              = false,
+  $killasgroup              = false,
   $group                    = 'root',
   $redirect_stderr          = false,
   $directory                = undef,
@@ -90,10 +92,10 @@ define supervisor::service (
   service { "supervisor::${name}":
     ensure   => $service_ensure,
     provider => base,
-    restart  => "/usr/bin/supervisorctl restart ${process_name}",
-    start    => "/usr/bin/supervisorctl start ${process_name}",
-    status   => "/usr/bin/supervisorctl status | awk '/^${name}[: ]/{print \$2}' | grep '^RUNNING$'",
-    stop     => "/usr/bin/supervisorctl stop ${process_name}",
+    restart  => "/usr/local/bin/supervisorctl restart ${process_name}",
+    start    => "/usr/local/bin/supervisorctl start ${process_name}",
+    status   => "/usr/local/bin/supervisorctl status | awk '/^${name}[: ]/{print \$2}' | grep '^RUNNING$'",
+    stop     => "/usr/local/bin/supervisorctl stop ${process_name}",
     require  => File["${supervisor::params::conf_dir}/${name}.ini"],
   }
 }
