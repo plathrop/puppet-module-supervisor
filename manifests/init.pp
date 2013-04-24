@@ -33,7 +33,7 @@
 #     Only used if inet_http_server is set to true.
 #     Default: undef
 #
-#   [*inet_server_password*]
+#   [*inet_server_pass*]
 #     Password for the inet_http_server.
 #     Only used if inet_http_server is set to true and inet_server_user is set.
 #     Default: undef
