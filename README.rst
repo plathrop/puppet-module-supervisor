@@ -1,7 +1,7 @@
 Puppet module for configuring the 'supervisor' daemon control
 utility. Currently tested on Debian, Ubuntu, and Fedora.
 
-Install into `module_path>/supervisor`
+Install into `<module_path>/supervisor`
 
 Example usage::
 
