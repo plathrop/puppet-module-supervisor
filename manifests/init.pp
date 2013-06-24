@@ -26,7 +26,7 @@
 #   [*inet_server_port*]
 #     inet_http_server ip:port to listen on.
 #     Only used if inet_http_server is set to true.
-#     Default: *:9000
+#     Default: \*:9000
 #
 #   [*inet_server_user*]
 #     If set, this is the name of the user to authenticate as.
