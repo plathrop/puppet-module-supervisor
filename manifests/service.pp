@@ -45,6 +45,7 @@ define supervisor::service (
       $dir_recurse = true
       $dir_force = true
       $service_ensure = 'stopped'
+      $config_ensure = 'absent'
     }
     present: {
       $autostart = true
