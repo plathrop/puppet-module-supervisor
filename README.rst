@@ -3,7 +3,9 @@ utility. Currently tested on Debian, Ubuntu, and Fedora.
 
 Install into `<module_path>/supervisor`
 
-Example usage::
+Example usage:
+
+.. code-block:: puppet
 
   include supervisor
 
@@ -17,3 +19,19 @@ Example usage::
       group       => 'scribe',
       require     => [ Package['scribe'], User['scribe'] ];
   }
+
+To use default debian paths:
+
+.. code-block:: puppet
+
+  class { 'supervisor':
+    conf_dir => '/etc/supervisor/conf.d',
+    conf_ext => '.conf',
+  }
+
+Running tests:
+
+.. code-block:: sh
+
+  $ bundle install --path=.gems
+  $ bundle exec rake spec
