@@ -1,2 +1,6 @@
 *.swp
 *.swo
+.gems/
+.bundle/
+spec/fixtures/
+Gemfile.lock

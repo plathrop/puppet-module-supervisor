@@ -119,7 +119,9 @@ class supervisor(
   $umask                    = '022',
   $supervisor_environment   = undef,
   $identifier               = undef,
-  $recurse_config_dir       = false
+  $recurse_config_dir       = false,
+  $conf_dir                 = $supervisor::params::conf_dir,
+  $conf_ext                 = $supervisor::params::conf_ext
 ) inherits supervisor::params {
 
   include supervisor::update
@@ -181,7 +183,7 @@ class supervisor(
   file { $supervisor::params::conf_file:
     ensure  => $file_ensure,
     content => template('supervisor/supervisord.conf.erb'),
-    require => File[$supervisor::params::conf_dir],
+    require => File[$conf_dir],
     notify  => Service[$supervisor::params::system_service],
   }
 
