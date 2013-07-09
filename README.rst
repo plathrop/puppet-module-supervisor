@@ -5,7 +5,6 @@ Install into `<module_path>/supervisor`
 
 Example usage::
 
-```puppet
   include supervisor
 
   supervisor::service {
@@ -18,20 +17,15 @@ Example usage::
       group       => 'scribe',
       require     => [ Package['scribe'], User['scribe'] ];
   }
-```
 
 To use default debian paths::
 
-```puppet
-class { 'supervisor':
-  conf_dir => '/etc/supervisor/conf.d',
-  conf_ext => '.conf',
-}
-```
+  class { 'supervisor':
+    conf_dir => '/etc/supervisor/conf.d',
+    conf_ext => '.conf',
+  }
 
 Running tests::
 
-```bash
-$ bundle install --path=.gems
-$ bundle exec rake spec
-```
+  $ bundle install --path=.gems
+  $ bundle exec rake spec
