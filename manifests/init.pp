@@ -163,7 +163,7 @@ class supervisor(
     }
   }
 
-  file { $supervisor::params::conf_dir:
+  file { $conf_dir:
     ensure  => $dir_ensure,
     purge   => true,
     recurse => $recurse_config_dir,
