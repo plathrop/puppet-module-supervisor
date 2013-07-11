@@ -15,7 +15,7 @@ class supervisor::params {
       $package        = 'supervisor'
     }
     default: {
-      fail("Unsupported platform: ${::operatingsystem}")
+      fail("Unsupported platform: ${::osfamily}")
     }
   }
 }
