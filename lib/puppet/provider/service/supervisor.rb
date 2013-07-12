@@ -47,17 +47,28 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
     :false
   end
 
-  # use hasstatus=>true when its set for the provider.
-  def statuscmd
-    ((@resource.provider.get(:hasstatus) == true) || (@resource[:hasstatus] == :true)) && [command(:supervisorctl), "status", @resource[:name]]
+  def restart
+    output = supervisorctl(:start, @resource[:name])
+    started = output.lines.grep(/started$/).count
+    stopped = output.lines.grep(/stopped$/).count
+    if started == stopped and started > 0
+      return
+    end
   end
 
-  def restartcmd
-    (@resource[:hasrestart] == :true) && [command(:service), "restart", @resource[:name]]
-  end
+  def start
+    output = supervisorctl(:start, @resource[:name])
+    #if output.empty? and '*' in self.name
+    #  return
+    #end
 
-  def startcmd
-    [command(:service), "start", @resource[:name]]
+    if output.include? 'ERROR (no such process)'
+      raise Puppet::Error, "Could not start #{self.name}: #{output}"
+    end
+
+    filtered_output = output.lines.reject {|item| item =~ /ERROR (already started)/}
+    filtered_output = filtered_output.reject {|item| item =~ /started/}
+    raise Puppet::Error, "Could not start #{self.name}: #{output}" unless filtered_output.empty?
   end
 
   def stopcmd

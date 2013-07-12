@@ -45,6 +45,52 @@ describe provider do
         p.status.should == :false
       end
     end
+    describe "start" do
+      it "should succeed if all processes are already started (no output from supervisorctl)" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = ''
+        p.start
+      end
+      it "should succeed if all processes are started" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = <<-EOF
+          some-program:some-program_9000: started
+          some-program:some-program_9001: started
+        EOF
+        p.start
+      end
+      it "should fail if not all processes are started" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = <<-EOF
+          some-program:some-program_9000: started
+          some-program:some-program_9001: ERROR (abnormal termination)
+        EOF
+        expect {
+          p.start
+        }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
+      end
+      it "should fail if output is unexpected" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = <<-EOF
+          and what do you think about king prawn?
+        EOF
+        expect {
+          p.start
+        }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
+      end
+    end
+    describe "restart" do
+      it "should succeed if all processes are started and stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = <<-EOF
+          some-program:some-program_9000: stopped
+          some-program:some-program_9001: stopped
+          some-program:some-program_9000: started
+          some-program:some-program_9001: started
+        EOF
+        p.restart
+      end
+    end
   end
 
   context "with a single process" do
@@ -73,6 +119,21 @@ describe provider do
         p = provider.new(resource)
         p.mocked_output[:status] = ''
         p.status.should == :false
+      end
+    end
+    describe "start" do
+      it "should succeed if process already started" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = 'some-program: ERROR (already started)'
+        p.start
+      end
+
+      it "should fail if process is not found" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = 'some-program: ERROR (no such process)'
+        expect {
+          p.start
+        }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
       end
     end
   end
