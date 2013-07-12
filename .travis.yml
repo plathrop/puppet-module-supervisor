@@ -1,1 +1,5 @@
-script: bundle exec rake spec
+script: bundle exec rake spec_prep; bundle exec rspec --format documentation spec/
+
+rvm:
+  - 1.9.3
+  - 1.8.7
