@@ -33,7 +33,7 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
       return :false
     end
 
-    filtered_output = output.grep /#{@resource[:name]}[ :_]/
+    filtered_output = output.lines.grep /#{@resource[:name]}[ :_]/
     if filtered_output.empty?
       return :false
     end
