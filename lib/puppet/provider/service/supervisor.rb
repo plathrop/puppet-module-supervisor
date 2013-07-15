@@ -38,21 +38,21 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
     begin
       output = supervisorctl(:status)
     rescue Puppet::ExecutionFailure
-      return :false
+      return :stopped
     end
 
     filtered_output = output.lines.grep /#{@resource[:name]}[ :_]/
     if filtered_output.empty?
-      return :false
+      return :stopped
     end
 
     status_not_running = filtered_output.reject {|item| item =~ /RUNNING/}
 
     if status_not_running.empty?
-      return :true
+      return :running
     end
 
-    :false
+    :stopped
   end
 
   def restart

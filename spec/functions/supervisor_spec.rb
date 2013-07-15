@@ -27,22 +27,22 @@ describe provider do
       Puppet::Type.type(:service).hash2resource({:name => 'some-program:*'})
     }
     describe "status" do
-      it "should return true if all processes are RUNNING" do
+      it "should return running if all processes are RUNNING" do
         p = provider.new(resource)
         p.mocked_output[:status] = "some-program:some-program_9000 RUNNING\nsome-program:some-program_9000 RUNNING\n"
-        p.status.should == :true
+        p.status.should == :running
       end
 
-      it "should return false if some processes are STOPPED" do
+      it "should return stopped if some processes are STOPPED" do
         p = provider.new(resource)
         p.mocked_output[:status] = "some-program:some-program_9000 RUNNING\nsome-program:some-program_9000 STOPPED\n"
-        p.status.should == :false
+        p.status.should == :stopped
       end
 
-      it "should return false if some processes are STARTING" do
+      it "should return stopped if some processes are STARTING" do
         p = provider.new(resource)
         p.mocked_output[:status] = "some-program:some-program_9000 RUNNING\nsome-program:some-program_9000 STARTING\n"
-        p.status.should == :false
+        p.status.should == :stopped
       end
     end
     describe "start" do
@@ -98,27 +98,27 @@ describe provider do
       Puppet::Type.type(:service).hash2resource({:name => 'some-program'})
     }
     describe "status" do
-      it "should return true if the process is running" do
+      it "should return running if the process is running" do
         p = provider.new(resource)
         p.mocked_output[:status] = 'some-program RUNNING'
-        p.status.should == :true
+        p.status.should == :running
       end
 
-      it "should return false if the process is STOPPED" do
+      it "should return stopped if the process is STOPPED" do
         p = provider.new(resource)
         p.mocked_output[:status] = 'some-program STOPPED'
-        p.status.should == :false
+        p.status.should == :stopped
       end
 
-      it "should return false if the process is not found" do
+      it "should return stopped if the process is not found" do
         p = provider.new(resource)
         p.mocked_output[:status] = 'some-other-program RUNNING'
-        p.status.should == :false
+        p.status.should == :stopped
       end
-      it "should return false if no processes are found" do
+      it "should return stopped if no processes are found" do
         p = provider.new(resource)
         p.mocked_output[:status] = ''
-        p.status.should == :false
+        p.status.should == :stopped
       end
     end
     describe "start" do
