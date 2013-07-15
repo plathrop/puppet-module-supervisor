@@ -79,15 +79,6 @@ describe provider do
         p.status.should == :stopped
       end
 
-      it "should return stopped if some processes are fatal" do
-        p = provider.new(resource)
-        p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 FATAL
-          some-program:some-program_9001 RUNNING
-        EOF
-        p.status.should == :stopped
-      end
-
       it "should return stopped if some processes are stopped and some are running" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
@@ -116,6 +107,15 @@ describe provider do
         p.mocked_output[:status] = <<-EOF
           some-other-program:some-other-program_9000 RUNNING
           some-other-program:some-other-program_9001 RUNNING
+        EOF
+        p.status.should == :stopped
+      end
+
+      it "should return stopped if some processes are fatal" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 FATAL
+          some-program:some-program_9001 RUNNING
         EOF
         p.status.should == :stopped
       end
@@ -169,6 +169,19 @@ describe provider do
         EOF
         p.restart
       end
+
+      it "should fail if not all processes are started and stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:restart] = <<-EOF
+          some-program:some-program_9000: stopped
+          some-program:some-program_9001: stopped
+          some-program:some-program_9001: started
+          some-program:some-program_9000: ERROR (abnormal termination)
+        EOF
+        expect {
+          p.restart
+        }.to raise_error(Puppet::Error, /Could not restart Service.some-program/)
+      end
     end
 
   end
@@ -203,6 +216,12 @@ describe provider do
       it "should return stopped if the process is not found" do
         p = provider.new(resource)
         p.mocked_output[:status] = 'some-other-program RUNNING'
+        p.status.should == :stopped
+      end
+
+      it "should return stopped if the process is fatal" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = 'some-program FATAL'
         p.status.should == :stopped
       end
     end
@@ -277,13 +296,14 @@ describe provider do
 
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-        some-program: stopped
-        some-program: ERROR (abnormal termination)
+          some-program: stopped
+          some-program: ERROR (abnormal termination)
         EOF
         expect {
           p.restart
-        }.to raise_error(Puppet::Error, %r{Could not start Service/some-program})
+        }.to raise_error(Puppet::Error, %r{Could not restart Service/some-program})
       end
+
     end
   end
 end

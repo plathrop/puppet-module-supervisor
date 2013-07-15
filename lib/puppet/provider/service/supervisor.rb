@@ -46,7 +46,7 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
       return :stopped
     end
 
-    if filtered_output.grep /STARTING/
+    unless filtered_output.grep(/STARTING/).empty?
       Puppet.warning "Could not reliably determine status: process #{self.name} is still starting"
     end
 
@@ -61,30 +61,26 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
 
   def restart
     output = supervisorctl(:restart, @resource[:name])
-    if output.include? 'ERROR (no such process)' or output.include? 'ERROR (abnormal termination)'
-      raise Puppet::Error, "Could not start #{self.name}: #{output}"
-    end
-    started = output.lines.grep(/started$/).count
-    stopped = output.lines.grep(/stopped$/).count
 
-    if started == stopped and started > 0
-      return
+    if output.include? 'ERROR (no such process)' or output.include? 'ERROR (abnormal termination)'
+      raise Puppet::Error, "Could not restart #{self.name}: #{output}"
     end
+
   end
 
   def start
     output = supervisorctl(:start, @resource[:name])
-    #if output.empty? and '*' in self.name
-    #  return
-    #end
 
     if output.include? 'ERROR (no such process)'
       raise Puppet::Error, "Could not start #{self.name}: #{output}"
     end
 
     filtered_output = output.lines.reject {|item| item =~ /ERROR (already started)/}
-    filtered_output = filtered_output.reject {|item| item =~ /started/}
-    raise Puppet::Error, "Could not start #{self.name}: #{output}" unless filtered_output.empty?
+    status_not_started = filtered_output.reject {|item| item =~ /started/}
+
+    unless status_not_started.empty?
+      raise Puppet::Error, "Could not start #{self.name}: #{output}"
+    end
   end
 
   def stop
