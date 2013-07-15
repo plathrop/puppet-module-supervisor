@@ -23,7 +23,7 @@ end
 
 describe provider do
 
-  context "with not processes configured" do
+  context "with no processes configured" do
     let (:resource) {
       Puppet::Type.type(:service).hash2resource({:name => 'some-program'})
     }
@@ -52,11 +52,48 @@ describe provider do
         p.status.should == :running
       end
 
+      it "should return running if some processes are starting" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 STARTING
+          some-program:some-program_9001 RUNNING
+        EOF
+        p.status.should == :running
+      end
+
       it "should return stopped if the processes are stopped" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
           some-program:some-program_9000 STOPPED
           some-program:some-program_9001 STOPPED
+        EOF
+        p.status.should == :stopped
+      end
+
+      it "should return stopped if the processes are stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 STOPPED
+          some-program:some-program_9001 STOPPED
+        EOF
+        p.status.should == :stopped
+      end
+
+      it "should return stopped if some processes are fatal" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 FATAL
+          some-program:some-program_9001 RUNNING
+        EOF
+        p.status.should == :stopped
+      end
+
+      it "should return stopped if some processes are stopped and some are running" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 STOPPED
+          some-program:some-program_9001 RUNNING
+          some-program:some-program_9002 STOPPED
         EOF
         p.status.should == :stopped
       end

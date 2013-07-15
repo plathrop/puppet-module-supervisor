@@ -89,6 +89,7 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
 
   def stop
     output = supervisorctl(:stop, @resource[:name])
+
     if output.include? 'ERROR (no such process)'
       raise Puppet::Error, "Could not start #{self.name}: #{output}"
     end
