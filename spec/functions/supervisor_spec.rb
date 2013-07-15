@@ -145,7 +145,7 @@ describe provider do
         EOF
         expect {
           p.start
-        }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
+        }.to raise_error(Puppet::Error, /Could not start some-program/)
       end
       it "should fail if output is unexpected" do
         p = provider.new(resource)
@@ -154,7 +154,7 @@ describe provider do
         EOF
         expect {
           p.start
-        }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
+        }.to raise_error(Puppet::Error, /Could not start some-program/)
       end
     end
 
@@ -180,7 +180,7 @@ describe provider do
         EOF
         expect {
           p.restart
-        }.to raise_error(Puppet::Error, /Could not restart Service.some-program/)
+        }.to raise_error(Puppet::Error, /Could not restart some-program/)
       end
     end
 
@@ -245,7 +245,7 @@ describe provider do
         p.mocked_output[:start] = 'some-program: ERROR (no such process)'
         expect {
           p.start
-        }.to raise_error(Puppet::Error, %r{Could not start Service/some-program})
+        }.to raise_error(Puppet::Error, /Could not start some-program/)
       end
     end
 
@@ -268,7 +268,7 @@ describe provider do
         p.mocked_output[:stop] = 'some-program: ERROR (no such process)'
         expect {
           p.stop
-        }.to raise_error(Puppet::Error, %r{Could not start Service/some-program})
+        }.to raise_error(Puppet::Error, /Could not start some-program/)
       end
     end
 
@@ -301,7 +301,7 @@ describe provider do
         EOF
         expect {
           p.restart
-        }.to raise_error(Puppet::Error, %r{Could not restart Service/some-program})
+        }.to raise_error(Puppet::Error, /Could not restart some-program/)
       end
 
     end
