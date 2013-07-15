@@ -22,35 +22,76 @@ end
 
 
 describe provider do
+
+  context "with not processes configured" do
+    let (:resource) {
+      Puppet::Type.type(:service).hash2resource({:name => 'some-program'})
+    }
+
+    describe "status" do
+      it "should return stopped if status produces no output" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = ''
+        p.status.should == :stopped
+      end
+    end
+  end
+
   context "with process group" do
     let (:resource) {
       Puppet::Type.type(:service).hash2resource({:name => 'some-program:*'})
     }
+
     describe "status" do
-      it "should return running if all processes are RUNNING" do
+      it "should return running if the processes are running" do
         p = provider.new(resource)
-        p.mocked_output[:status] = "some-program:some-program_9000 RUNNING\nsome-program:some-program_9000 RUNNING\n"
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 RUNNING
+          some-program:some-program_9001 RUNNING
+        EOF
         p.status.should == :running
       end
 
-      it "should return stopped if some processes are STOPPED" do
+      it "should return stopped if the processes are stopped" do
         p = provider.new(resource)
-        p.mocked_output[:status] = "some-program:some-program_9000 RUNNING\nsome-program:some-program_9000 STOPPED\n"
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 STOPPED
+          some-program:some-program_9001 STOPPED
+        EOF
         p.status.should == :stopped
       end
 
-      it "should return stopped if some processes are STARTING" do
+      # This one is suspicious: should we really be that optimistic
+      # and hope that STARTING will be RUNNING soon?
+      # We could try sleeping $startsecs after restart. After that the state is deterministic.
+      # For now we just issue a warning.
+      it "should return running if the processes are starting" do
         p = provider.new(resource)
-        p.mocked_output[:status] = "some-program:some-program_9000 RUNNING\nsome-program:some-program_9000 STARTING\n"
+        p.mocked_output[:status] = <<-EOF
+          some-program:some-program_9000 STARTING
+          some-program:some-program_9001 STARTING
+        EOF
+        p.status.should == :running
+      end
+
+      it "should return stopped if the processes are not found" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = <<-EOF
+          some-other-program:some-other-program_9000 RUNNING
+          some-other-program:some-other-program_9001 RUNNING
+        EOF
         p.status.should == :stopped
       end
+
     end
+
     describe "start" do
       it "should succeed if all processes are already started (no output from supervisorctl)" do
         p = provider.new(resource)
         p.mocked_output[:start] = ''
         p.start
       end
+
       it "should succeed if all processes are started" do
         p = provider.new(resource)
         p.mocked_output[:start] = <<-EOF
@@ -79,10 +120,11 @@ describe provider do
         }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
       end
     end
+
     describe "restart" do
       it "should succeed if all processes are started and stopped" do
         p = provider.new(resource)
-        p.mocked_output[:start] = <<-EOF
+        p.mocked_output[:restart] = <<-EOF
           some-program:some-program_9000: stopped
           some-program:some-program_9001: stopped
           some-program:some-program_9000: started
@@ -91,6 +133,7 @@ describe provider do
         p.restart
       end
     end
+
   end
 
   context "with a single process" do
@@ -104,10 +147,20 @@ describe provider do
         p.status.should == :running
       end
 
-      it "should return stopped if the process is STOPPED" do
+      it "should return stopped if the process is stopped" do
         p = provider.new(resource)
         p.mocked_output[:status] = 'some-program STOPPED'
         p.status.should == :stopped
+      end
+
+      # This one is suspicious: should we really be that optimistic
+      # and hope that STARTING will be RUNNING soon?
+      # We could try sleeping $startsecs after restart. After that the state is deterministic.
+      # For now we just issue a warning.
+      it "should return running if the process is starting" do
+        p = provider.new(resource)
+        p.mocked_output[:status] = 'some-program STARTING'
+        p.status.should == :running
       end
 
       it "should return stopped if the process is not found" do
@@ -115,13 +168,16 @@ describe provider do
         p.mocked_output[:status] = 'some-other-program RUNNING'
         p.status.should == :stopped
       end
-      it "should return stopped if no processes are found" do
-        p = provider.new(resource)
-        p.mocked_output[:status] = ''
-        p.status.should == :stopped
-      end
     end
+
     describe "start" do
+
+      it "should start the process if it is stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = 'some-program: started'
+        p.start
+      end
+
       it "should succeed if process already started" do
         p = provider.new(resource)
         p.mocked_output[:start] = 'some-program: ERROR (already started)'
@@ -133,7 +189,63 @@ describe provider do
         p.mocked_output[:start] = 'some-program: ERROR (no such process)'
         expect {
           p.start
-        }.to raise_error(Puppet::Error, /Could not start Service.some-program/)
+        }.to raise_error(Puppet::Error, %r{Could not start Service/some-program})
+      end
+    end
+
+    describe "stop" do
+
+      it "should stop the process if it is running" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = 'some-program: stopped'
+        p.stop
+      end
+
+      it "should succeed if process already stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = 'some-program: ERROR (not running)'
+        p.stop
+      end
+
+      it "should fail if the process name is not found" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = 'some-program: ERROR (no such process)'
+        expect {
+          p.stop
+        }.to raise_error(Puppet::Error, %r{Could not start Service/some-program})
+      end
+    end
+
+    describe "restart" do
+
+      it "should succeed if the process is stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:restart] = <<-EOF
+          some-program: ERROR (not running)
+          some-program: started
+        EOF
+        p.restart
+      end
+
+      it "should succeed if the process is running" do
+        p = provider.new(resource)
+        p.mocked_output[:restart] = <<-EOF
+          some-program: stopped
+          some-program: started
+        EOF
+        p.restart
+      end
+
+      it "should fail if the process could not be started" do
+
+        p = provider.new(resource)
+        p.mocked_output[:restart] = <<-EOF
+        some-program: stopped
+        some-program: ERROR (abnormal termination)
+        EOF
+        expect {
+          p.restart
+        }.to raise_error(Puppet::Error, %r{Could not start Service/some-program})
       end
     end
   end

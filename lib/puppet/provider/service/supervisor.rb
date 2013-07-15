@@ -46,7 +46,11 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
       return :stopped
     end
 
-    status_not_running = filtered_output.reject {|item| item =~ /RUNNING/}
+    if filtered_output.grep /STARTING/
+      Puppet.warning "Could not reliably determine status: process #{self.name} is still starting"
+    end
+
+    status_not_running = filtered_output.reject {|item| item =~ /RUNNING|STARTING/}
 
     if status_not_running.empty?
       return :running
@@ -56,9 +60,13 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
   end
 
   def restart
-    output = supervisorctl(:start, @resource[:name])
+    output = supervisorctl(:restart, @resource[:name])
+    if output.include? 'ERROR (no such process)' or output.include? 'ERROR (abnormal termination)'
+      raise Puppet::Error, "Could not start #{self.name}: #{output}"
+    end
     started = output.lines.grep(/started$/).count
     stopped = output.lines.grep(/stopped$/).count
+
     if started == stopped and started > 0
       return
     end
@@ -80,7 +88,11 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
   end
 
   def stop
-    supervisorctl(:stop, @resource[:name])
+    output = supervisorctl(:stop, @resource[:name])
+    if output.include? 'ERROR (no such process)'
+      raise Puppet::Error, "Could not start #{self.name}: #{output}"
+    end
+
   end
 
 end
