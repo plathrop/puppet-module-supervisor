@@ -13,6 +13,14 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
     []
   end
 
+  def _name
+    self.name.split(':')[0]
+  end
+
+  def process_name
+    self.name
+  end
+
   def enable
       output = supervisorctl(:add, @resource[:name])
   rescue Puppet::ExecutionFailure => detail
@@ -71,8 +79,8 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
     raise Puppet::Error, "Could not start #{self.name}: #{output}" unless filtered_output.empty?
   end
 
-  def stopcmd
-    [command(:service), "stop", @resource[:name]]
+  def stop
+    supervisorctl(:stop, @resource[:name])
   end
 
 end
