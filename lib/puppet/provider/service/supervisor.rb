@@ -4,13 +4,7 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
 
   desc "Supervisor: A daemontools-like service monitor written in python"
 
-  commands :supervisord   => "/usr/bin/supervisord",
-           :supervisorctl => "/usr/bin/supervisorctl"
-
-  def self.instances
-    # this exclude list is all from /sbin/service (5.x), but I did not exclude kudzu
-    []
-  end
+  commands :supervisorctl => "/usr/bin/supervisorctl"
 
   def program_name
     @resource[:name].split(':')[0]
@@ -18,19 +12,6 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
 
   def process_name
     @resource[:name]
-  end
-
-  def enable
-      output = supervisorctl(:add, self.process_name)
-  rescue Puppet::ExecutionFailure => detail
-      raise Puppet::Error, "Could not enable #{self.process_name}: #{detail}"
-  end
-
-  def disable
-    self.stopcmd
-    output = supervisorctl(:remove, self.process_name)
-  rescue Puppet::ExecutionFailure
-    raise Puppet::Error, "Could not disable #{self.process_name}: #{output}"
   end
 
   def status
@@ -64,7 +45,6 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
     if output.include? 'ERROR (no such process)' or output.include? 'ERROR (abnormal termination)'
       raise Puppet::Error, "Could not restart #{self.process_name}: #{output}"
     end
-
   end
 
   def start
@@ -92,7 +72,6 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
     if output =~ /^error/
       raise Puppet::Error, "Could not stop #{self.process_name}: #{output}"
     end
-
   end
 
 end
