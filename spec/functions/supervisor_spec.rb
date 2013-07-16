@@ -46,8 +46,8 @@ describe provider do
       it "should return running if the processes are running" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 RUNNING
-          some-program:some-program_9001 RUNNING
+some-program:some-program_9000 RUNNING
+some-program:some-program_9001 RUNNING
         EOF
         p.status.should == :running
       end
@@ -55,8 +55,8 @@ describe provider do
       it "should return running if some processes are starting" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 STARTING
-          some-program:some-program_9001 RUNNING
+some-program:some-program_9000 STARTING
+some-program:some-program_9001 RUNNING
         EOF
         p.status.should == :running
       end
@@ -64,8 +64,8 @@ describe provider do
       it "should return stopped if the processes are stopped" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 STOPPED
-          some-program:some-program_9001 STOPPED
+some-program:some-program_9000 STOPPED
+some-program:some-program_9001 STOPPED
         EOF
         p.status.should == :stopped
       end
@@ -73,8 +73,8 @@ describe provider do
       it "should return stopped if the processes are stopped" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 STOPPED
-          some-program:some-program_9001 STOPPED
+some-program:some-program_9000 STOPPED
+some-program:some-program_9001 STOPPED
         EOF
         p.status.should == :stopped
       end
@@ -82,9 +82,9 @@ describe provider do
       it "should return stopped if some processes are stopped and some are running" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 STOPPED
-          some-program:some-program_9001 RUNNING
-          some-program:some-program_9002 STOPPED
+some-program:some-program_9000 STOPPED
+some-program:some-program_9001 RUNNING
+some-program:some-program_9002 STOPPED
         EOF
         p.status.should == :stopped
       end
@@ -96,8 +96,8 @@ describe provider do
       it "should return running if the processes are starting" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 STARTING
-          some-program:some-program_9001 STARTING
+some-program:some-program_9000 STARTING
+some-program:some-program_9001 STARTING
         EOF
         p.status.should == :running
       end
@@ -105,8 +105,8 @@ describe provider do
       it "should return stopped if the processes are not found" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-other-program:some-other-program_9000 RUNNING
-          some-other-program:some-other-program_9001 RUNNING
+some-other-program:some-other-program_9000 RUNNING
+some-other-program:some-other-program_9001 RUNNING
         EOF
         p.status.should == :stopped
       end
@@ -114,8 +114,8 @@ describe provider do
       it "should return stopped if some processes are fatal" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
-          some-program:some-program_9000 FATAL
-          some-program:some-program_9001 RUNNING
+some-program:some-program_9000 FATAL
+some-program:some-program_9001 RUNNING
         EOF
         p.status.should == :stopped
       end
@@ -132,25 +132,27 @@ describe provider do
       it "should succeed if all processes are started" do
         p = provider.new(resource)
         p.mocked_output[:start] = <<-EOF
-          some-program:some-program_9000: started
-          some-program:some-program_9001: started
+some-program:some-program_9000: started
+some-program:some-program_9001: started
         EOF
         p.start
       end
-      it "should fail if not all processes are started" do
+
+      it "should fail if not all processes could be started" do
         p = provider.new(resource)
         p.mocked_output[:start] = <<-EOF
-          some-program:some-program_9000: started
-          some-program:some-program_9001: ERROR (abnormal termination)
+some-program:some-program_9000: started
+some-program:some-program_9001: ERROR (abnormal termination)
         EOF
         expect {
           p.start
         }.to raise_error(Puppet::Error, /Could not start some-program/)
       end
+
       it "should fail if output is unexpected" do
         p = provider.new(resource)
         p.mocked_output[:start] = <<-EOF
-          and what do you think about king prawn?
+and what do you think about king prawn?
         EOF
         expect {
           p.start
@@ -158,14 +160,68 @@ describe provider do
       end
     end
 
+    describe "stop" do
+
+      it "should stop the process if it is running" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = <<-EOF
+some-program:some-program_9000: stopped
+some-program:some-program_9001: stopped
+        EOF
+        p.stop
+      end
+
+      it "should succeed if process already stopped" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = <<-EOF
+some-program:some-program_9000: stopped
+some-program:some-program_9001: ERROR (not running)
+        EOF
+        p.stop
+      end
+
+      it "should fail if the process name is not found" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = <<-EOF
+error: <class 'xmlrpclib.Fault'>, <Fault 10: 'BAD_NAME: some-other-program'>: file: /usr/lib/python2.6/xmlrpclib.py
+        EOF
+        expect {
+          p.stop
+        }.to raise_error(Puppet::Error, /Could not stop some-program/)
+      end
+
+      it "should succeed even if it wasn't running (race condition?)" do
+        p = provider.new(resource)
+        p.mocked_output[:stop] = <<-EOF
+FAILED: attempted to kill some-program_9014 with sig SIGTERM but it wasn't running
+FAILED: attempted to kill some-program_9013 with sig SIGTERM but it wasn't running
+some-program_9018: stopped
+some-program_9019: stopped
+        EOF
+        p.stop
+      end
+    end
+
     describe "restart" do
       it "should succeed if all processes are started and stopped" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-          some-program:some-program_9000: stopped
-          some-program:some-program_9001: stopped
-          some-program:some-program_9000: started
-          some-program:some-program_9001: started
+some-program:some-program_9000: stopped
+some-program:some-program_9001: stopped
+some-program:some-program_9000: started
+some-program:some-program_9001: started
+        EOF
+        p.restart
+      end
+
+
+      it "should succeed if some processes are not running" do
+        p = provider.new(resource)
+        p.mocked_output[:restart] = <<-EOF
+some-program:some-program_9000: stopped
+some-program:some-program_9000: started
+some-program:some-program_9001: started
+some-program:some-program_9002: started
         EOF
         p.restart
       end
@@ -173,10 +229,10 @@ describe provider do
       it "should fail if not all processes are started and stopped" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-          some-program:some-program_9000: stopped
-          some-program:some-program_9001: stopped
-          some-program:some-program_9001: started
-          some-program:some-program_9000: ERROR (abnormal termination)
+some-program:some-program_9000: stopped
+some-program:some-program_9001: stopped
+some-program:some-program_9001: started
+some-program:some-program_9000: ERROR (abnormal termination)
         EOF
         expect {
           p.restart
@@ -247,6 +303,14 @@ describe provider do
           p.start
         }.to raise_error(Puppet::Error, /Could not start some-program/)
       end
+
+      it "should fail if process could not be started" do
+        p = provider.new(resource)
+        p.mocked_output[:start] = 'some-program: ERROR (abnormal termination)'
+        expect {
+          p.start
+        }.to raise_error(Puppet::Error, /Could not start some-program/)
+      end
     end
 
     describe "stop" do
@@ -268,7 +332,7 @@ describe provider do
         p.mocked_output[:stop] = 'some-program: ERROR (no such process)'
         expect {
           p.stop
-        }.to raise_error(Puppet::Error, /Could not start some-program/)
+        }.to raise_error(Puppet::Error, /Could not stop some-program/)
       end
     end
 
@@ -277,8 +341,8 @@ describe provider do
       it "should succeed if the process is stopped" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-          some-program: ERROR (not running)
-          some-program: started
+some-program: ERROR (not running)
+some-program: started
         EOF
         p.restart
       end
@@ -286,8 +350,8 @@ describe provider do
       it "should succeed if the process is running" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-          some-program: stopped
-          some-program: started
+some-program: stopped
+some-program: started
         EOF
         p.restart
       end
@@ -296,8 +360,8 @@ describe provider do
 
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-          some-program: stopped
-          some-program: ERROR (abnormal termination)
+some-program: stopped
+some-program: ERROR (abnormal termination)
         EOF
         expect {
           p.restart
