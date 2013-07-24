@@ -40,3 +40,8 @@ serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
 
 [include]
 files = <%= conf_dir -%>/*<%= conf_ext -%>
+<% if @include_files -%>
+<% include_files.each do |path| -%>
+<%= " #{path}" -%>
+<% end -%>
+<% end -%>
