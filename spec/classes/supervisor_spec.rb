@@ -14,4 +14,13 @@ describe 'supervisor' do
       should create_file('/some/dir').with_ensure('directory')
     end
   end
+
+  context "with include_files" do
+    let(:params) { {
+      :include_files     => ['/etc/someconfig', '/etc/somewhereelse/*.conf'],
+    } }
+    it {
+      should create_file('/etc/supervisor/supervisord.conf').with_content(%r{files = .* /etc/someconfig /etc/somewhereelse/\*\.conf$})
+    }
+  end
 end
