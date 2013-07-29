@@ -77,7 +77,7 @@
 #
 #   [*supervisor_environment*]
 #     A list of key/value pairs in the form KEY=val,KEY2=val2 that will be
-#     placed in the supervisord process’ environment.
+#     placed in the supervisord process environment.
 #     Default: undef
 #
 #   [*identifier*]
