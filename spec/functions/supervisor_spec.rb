@@ -70,15 +70,6 @@ some-program:some-program_9001 STOPPED
         p.status.should == :stopped
       end
 
-      it "should return stopped if the processes are stopped" do
-        p = provider.new(resource)
-        p.mocked_output[:status] = <<-EOF
-some-program:some-program_9000 STOPPED
-some-program:some-program_9001 STOPPED
-        EOF
-        p.status.should == :stopped
-      end
-
       it "should return stopped if some processes are stopped and some are running" do
         p = provider.new(resource)
         p.mocked_output[:status] = <<-EOF
