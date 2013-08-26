@@ -25,7 +25,7 @@ describe provider do
 
   context "with no processes configured" do
     let (:resource) {
-      Puppet::Type.type(:service).hash2resource({:name => 'some-program'})
+      Puppet::Type.type(:service).hash2resource({:name => 'supervisor::some-program'})
     }
 
     describe "status" do
@@ -39,7 +39,7 @@ describe provider do
 
   context "with process group" do
     let (:resource) {
-      Puppet::Type.type(:service).hash2resource({:name => 'some-program:*'})
+      Puppet::Type.type(:service).hash2resource({:name => 'supervisor::some-program'})
     }
 
     describe "status" do
@@ -235,8 +235,16 @@ some-program:some-program_9000: ERROR (abnormal termination)
 
   context "with a single process" do
     let (:resource) {
-      Puppet::Type.type(:service).hash2resource({:name => 'some-program'})
+      Puppet::Type.type(:service).hash2resource({:name => 'supervisor::some-program'})
     }
+
+    describe "group_or_process_name" do
+      it "should return some-programm" do
+        p = provider.new(resource)
+        p.group_or_process_name.should == 'some-program'
+      end
+    end
+
     describe "status" do
       it "should return running if the process is running" do
         p = provider.new(resource)

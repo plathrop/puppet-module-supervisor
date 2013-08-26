@@ -88,7 +88,7 @@ define supervisor::service (
     notify  => Class['supervisor::update'],
   }
 
-  service { "${process_name}":
+  service { "supervisor::${name}":
     ensure   => $service_ensure,
     provider => supervisor,
     require  => [Class['supervisor::update'], File["${supervisor::conf_dir}/${name}${supervisor::conf_ext}"]],
