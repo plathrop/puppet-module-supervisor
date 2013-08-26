@@ -5,8 +5,8 @@ file=/var/run/supervisor.sock   ; (the path to the socket file)
 [inet_http_server]
 port=<%= @inet_server_port %>
 <% if @inet_server_user && @inet_server_pass -%>
-user=<%= @inet_server_user %>
-pass=<%= @inet_server_pass %>
+username=<%= @inet_server_user %>
+password=<%= @inet_server_pass %>
 <% end -%>
 <% end -%>
 
