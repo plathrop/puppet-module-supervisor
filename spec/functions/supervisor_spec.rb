@@ -123,8 +123,8 @@ some-program:some-program_9001 RUNNING
       it "should succeed if all processes are started" do
         p = provider.new(resource)
         p.mocked_output[:start] = <<-EOF
-some-program:some-program_9000: started
-some-program:some-program_9001: started
+some-program_9000: started
+some-program_9001: started
         EOF
         p.start
       end
@@ -132,8 +132,8 @@ some-program:some-program_9001: started
       it "should fail if not all processes could be started" do
         p = provider.new(resource)
         p.mocked_output[:start] = <<-EOF
-some-program:some-program_9000: started
-some-program:some-program_9001: ERROR (abnormal termination)
+some-program_9000: started
+some-program_9001: ERROR (abnormal termination)
         EOF
         expect {
           p.start
@@ -156,8 +156,8 @@ and what do you think about king prawn?
       it "should stop the process if it is running" do
         p = provider.new(resource)
         p.mocked_output[:stop] = <<-EOF
-some-program:some-program_9000: stopped
-some-program:some-program_9001: stopped
+some-program_9000: stopped
+some-program_9001: stopped
         EOF
         p.stop
       end
@@ -165,8 +165,8 @@ some-program:some-program_9001: stopped
       it "should succeed if process already stopped" do
         p = provider.new(resource)
         p.mocked_output[:stop] = <<-EOF
-some-program:some-program_9000: stopped
-some-program:some-program_9001: ERROR (not running)
+some-program_9000: stopped
+some-program_9001: ERROR (not running)
         EOF
         p.stop
       end
@@ -197,10 +197,10 @@ some-program_9019: stopped
       it "should succeed if all processes are started and stopped" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-some-program:some-program_9000: stopped
-some-program:some-program_9001: stopped
-some-program:some-program_9000: started
-some-program:some-program_9001: started
+some-program_9000: stopped
+some-program_9001: stopped
+some-program_9000: started
+some-program_9001: started
         EOF
         p.restart
       end
@@ -209,10 +209,10 @@ some-program:some-program_9001: started
       it "should succeed if some processes are not running" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-some-program:some-program_9000: stopped
-some-program:some-program_9000: started
-some-program:some-program_9001: started
-some-program:some-program_9002: started
+some-program_9000: stopped
+some-program_9000: started
+some-program_9001: started
+some-program_9002: started
         EOF
         p.restart
       end
@@ -220,10 +220,10 @@ some-program:some-program_9002: started
       it "should fail if not all processes are started and stopped" do
         p = provider.new(resource)
         p.mocked_output[:restart] = <<-EOF
-some-program:some-program_9000: stopped
-some-program:some-program_9001: stopped
-some-program:some-program_9001: started
-some-program:some-program_9000: ERROR (abnormal termination)
+some-program_9000: stopped
+some-program_9001: stopped
+some-program_9001: started
+some-program_9000: ERROR (abnormal termination)
         EOF
         expect {
           p.restart
