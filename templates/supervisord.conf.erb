@@ -1,5 +1,11 @@
 [unix_http_server]
-file=/var/run/supervisor.sock   ; (the path to the socket file)
+file=<%= unix_server_file %>   ; (the path to the socket file)
+<% if unix_server_chmod -%>
+chmod=<%= unix_server_chmod %>
+<% end -%>
+<% if unix_server_chown -%>
+chown=<%= unix_server_chown %>
+<% end -%>
 
 <% if @enable_inet_server -%>
 [inet_http_server]
