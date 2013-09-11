@@ -5,6 +5,21 @@ describe 'supervisor' do
     :osfamily => 'debian',
   } }
 
+  context "with defaults" do
+    it {
+      should create_file('/etc/logrotate.d/supervisor')
+    }
+  end
+
+  context "with enable_logrotate=false" do
+    let (:params) { {
+      :enable_logrotate => false
+    } }
+    it {
+      should_not create_file('/etc/logrotate.d/supervisor')
+    }
+  end
+
   context "with configured conf_dir" do
     let (:params) { {
       :conf_dir => '/some/dir',
