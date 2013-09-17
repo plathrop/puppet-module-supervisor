@@ -23,6 +23,8 @@ define supervisor::service (
   $exitcodes                = '0,2',
   $stopsignal               = 'TERM',
   $stopwait                 = 10,
+  $stopasgroup              = false,
+  $killasgroup              = false,
   $user                     = 'root',
   $group                    = 'root',
   $redirect_stderr          = false,
