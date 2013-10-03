@@ -55,7 +55,7 @@ define supervisor::service (
       $service_ensure = 'running'
 
       if $enable == true {
-        $config_ensure = undef
+        $config_ensure = file
       } else {
         $config_ensure = absent
       }
