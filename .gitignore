@@ -5,3 +5,5 @@
 spec/fixtures/
 Gemfile.lock
 .rspec-local
+.idea
+atlassian-ide-plugin.xml
