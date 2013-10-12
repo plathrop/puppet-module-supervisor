@@ -14,6 +14,11 @@ startretries=<%= @retries %>
 exitcodes=<%= @exitcodes %>
 stopsignal=<%= @stopsignal %>
 stopwaitsecs=<%= @stopwait %>
+<% if @stopasgroup -%>
+stopasgroup=<%= @stopasgroup %>
+<% else -%>
+killasgroup=<%= @killasgroup %>
+<% end -%>
 <% if @directory -%>
 directory=<%= @directory %>
 <% end -%>
@@ -41,3 +46,4 @@ environment=<%= @environment %>
 <% if @umask %>
 umask=<%= @umask %>
 <% end -%>
+
