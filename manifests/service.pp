@@ -81,7 +81,9 @@ define supervisor::service (
     require => Class['supervisor'],
   }
 
-  file { "${supervisor::conf_dir}/${name}${supervisor::conf_ext}":
+  $conf_file = "${supervisor::conf_dir}/${name}${supervisor::conf_ext}"
+
+  file { $conf_file:
     ensure  => $config_ensure,
     content => template('supervisor/service.ini.erb'),
     require => File["/var/log/supervisor/${name}"],
@@ -91,6 +93,6 @@ define supervisor::service (
   service { "supervisor::${name}":
     ensure   => $service_ensure,
     provider => supervisor,
-    require  => [Class['supervisor::update'], File["${supervisor::conf_dir}/${name}${supervisor::conf_ext}"]],
+    require  => [Class['supervisor::update'], File[$conf_file]],
   }
 }
