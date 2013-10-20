@@ -93,6 +93,12 @@ define supervisor::service (
     provider => supervisor,
   }
 
-   File["/var/log/supervisor/${name}"] -> File[$conf_file] ~>
-   Class['supervisor::update'] -> Service["supervisor::${name}"]
+  if $ensure == 'present' {
+    File["/var/log/supervisor/${name}"] -> File[$conf_file] ~>
+    Class['supervisor::update'] -> Service["supervisor::${name}"]
+  } else { # $ensure == 'absent'
+    # First stop the service, delete the .ini, reload the config, delete the log dir
+    Service["supervisor::${name}"] -> File[$conf_file] ~>
+    Class['supervisor::update'] -> File["/var/log/supervisor/${name}"]
+  }
 }
