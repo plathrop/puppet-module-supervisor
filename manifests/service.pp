@@ -86,13 +86,13 @@ define supervisor::service (
   file { $conf_file:
     ensure  => $config_ensure,
     content => template('supervisor/service.ini.erb'),
-    require => File["/var/log/supervisor/${name}"],
-    notify  => Class['supervisor::update'],
   }
 
   service { "supervisor::${name}":
     ensure   => $service_ensure,
     provider => supervisor,
-    require  => [Class['supervisor::update'], File[$conf_file]],
   }
+
+   File["/var/log/supervisor/${name}"] -> File[$conf_file] ~>
+   Class['supervisor::update'] -> Service["supervisor::${name}"]
 }
