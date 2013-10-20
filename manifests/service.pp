@@ -13,7 +13,6 @@
 define supervisor::service (
   $command,
   $ensure                   = present,
-  $enable                   = true,
   $numprocs                 = 1,
   $numprocs_start           = 0,
   $priority                 = 999,
@@ -23,6 +22,8 @@ define supervisor::service (
   $exitcodes                = '0,2',
   $stopsignal               = 'TERM',
   $stopwait                 = 10,
+  $stopasgroup              = false,
+  $killasgroup              = false,
   $user                     = 'root',
   $group                    = 'root',
   $redirect_stderr          = false,
@@ -53,12 +54,7 @@ define supervisor::service (
       $dir_recurse = false
       $dir_force = false
       $service_ensure = 'running'
-
-      if $enable == true {
-        $config_ensure = undef
-      } else {
-        $config_ensure = absent
-      }
+      $config_ensure = file
     }
     default: {
       fail("ensure must be 'present' or 'absent', not ${ensure}")
