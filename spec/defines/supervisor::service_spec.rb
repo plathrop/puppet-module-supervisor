@@ -42,6 +42,18 @@ describe 'supervisor::service' do
       should create_file('/etc/supervisor/sometitle.ini') \
           .with_content(Regexp.new Regexp.escape 'command=somecommand')
     end
+
+    context "with ensure => absent" do
+      let (:params) { {
+        :command => 'somecommand',
+        :ensure => 'absent',
+      } }
+
+      it "should delete config and log dir" do
+        should contain_file('/etc/supervisor/sometitle.ini').with_ensure('absent')
+        should contain_file('/var/log/supervisor/sometitle').with_ensure('absent')
+      end
+    end
   end
 
 end
