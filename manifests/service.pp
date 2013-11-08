@@ -77,20 +77,24 @@ define supervisor::service (
     require => Class['supervisor'],
   }
 
-  file { "${supervisor::conf_dir}/${name}${supervisor::conf_ext}":
+  $conf_file = "${supervisor::conf_dir}/${name}${supervisor::conf_ext}"
+
+  file { $conf_file:
     ensure  => $config_ensure,
     content => template('supervisor/service.ini.erb'),
-    require => File["/var/log/supervisor/${name}"],
-    notify  => Class['supervisor::update'],
   }
 
   service { "supervisor::${name}":
     ensure   => $service_ensure,
-    provider => base,
-    restart  => "/usr/bin/supervisorctl restart ${process_name} | awk '/^${name}[: ]/{print \$2}' | grep -Pzo '^stopped\\nstarted$'",
-    start    => "/usr/bin/supervisorctl start ${process_name} | awk '/^${name}[: ]/{print \$2}' | grep '^started$'",
-    status   => "/usr/bin/supervisorctl status | awk '/^${name}[: ]/{print \$2}' | grep '^RUNNING$'",
-    stop     => "/usr/bin/supervisorctl stop ${process_name} | awk '/^${name}[: ]/{print \$2}' | grep '^stopped$'",
-    require  => [Class['supervisor::update'], File["${supervisor::conf_dir}/${name}${supervisor::conf_ext}"]],
+    provider => supervisor,
+  }
+
+  if $ensure == 'present' {
+    File["/var/log/supervisor/${name}"] -> File[$conf_file] ~>
+    Class['supervisor::update'] -> Service["supervisor::${name}"]
+  } else { # $ensure == 'absent'
+    # First stop the service, delete the .ini, reload the config, delete the log dir
+    Service["supervisor::${name}"] -> File[$conf_file] ~>
+    Class['supervisor::update'] -> File["/var/log/supervisor/${name}"]
   }
 }
