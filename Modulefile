@@ -1,7 +1,7 @@
-name    'puppet-module-supervisor'
-version '0.0.1'
+name    'jimdo-supervisor'
+version '0.1.0'
 source 'https://github.com/plathrop/puppet-module-supervisor'
-author 'Paul Lathrop <paul@tertiusfamily.net>'
+author 'Paul Lathrop <paul@tertiusfamily.net>, Ilya Margolin <ilya@jimdo.com>, Sören Krings <soeren@jimdo.com>'
 license '2 clause BSD, see LICENSE'
 summary 'Puppet module to install and configure supervisor'
 description "Puppet module for configuring the 'supervisor' daemon control utility. Currently tested on Debian, Ubuntu, and Fedora."
