@@ -11,6 +11,10 @@
 #     Upgrade package automatically, if there is a newer version.
 #     Default: false
 #
+#   [*manage_service*]
+#     Manage the supervisor service
+#     Default: true
+#
 #   [*service_ensure*]
 #     Ensure if service is running or stopped.
 #     Default: running
@@ -128,10 +132,9 @@ class supervisor(
   $recurse_config_dir       = false,
   $conf_dir                 = $supervisor::params::conf_dir,
   $conf_ext                 = $supervisor::params::conf_ext,
-  $include_files            = []
+  $include_files            = [],
+  $manage_service           = true,
 ) inherits supervisor::params {
-
-  include supervisor::update
 
   case $ensure {
     present: {
@@ -191,7 +194,6 @@ class supervisor(
     ensure  => $file_ensure,
     content => template('supervisor/supervisord.conf.erb'),
     require => File[$conf_dir],
-    notify  => Service[$supervisor::params::system_service],
   }
 
   if $enable_logrotate == true {
@@ -202,10 +204,15 @@ class supervisor(
     }
   }
 
-  service { $supervisor::params::system_service:
-    ensure     => $service_ensure_real,
-    enable     => $service_enable,
-    hasrestart => true,
-    require    => File[$supervisor::params::conf_file],
+  if str2bool($manage_service) {
+    include supervisor::update
+    File[$supervisor::params::conf_file]
+    ~>
+    service { $supervisor::params::system_service:
+      ensure     => $service_ensure_real,
+      enable     => $service_enable,
+      hasrestart => true,
+      require    => File[$supervisor::params::conf_file],
+    }
   }
 }
