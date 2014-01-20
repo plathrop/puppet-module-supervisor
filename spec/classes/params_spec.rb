@@ -5,18 +5,18 @@ describe 'supervisor::params' do
     let(:facts) { {
       :osfamily => 'redhat',
     } }
-    it "should compile" do
-      catalogue
-    end
+    it {
+      should compile
+    }
   end
 
   context "on debian" do
     let(:facts) { {
       :osfamily => 'debian',
     } }
-    it "should compile" do
-      catalogue
-    end
+    it {
+      should compile
+    }
   end
 
   context "on windows" do
@@ -25,7 +25,7 @@ describe 'supervisor::params' do
     } }
     it {
       expect {
-        catalogue
+        subject
       }.to raise_error(Puppet::Error, /Unsupported platform: Windows/)
     }
   end
