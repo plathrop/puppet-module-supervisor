@@ -56,4 +56,20 @@ describe 'supervisor::service' do
     end
   end
 
+  context "with ensure => stopped" do
+    let (:params) { {
+      :command => 'somecommand',
+      :ensure => 'stopped',
+    } }
+
+    it "should create /etc/supervisor/sometitle.ini" do
+      should create_file('/etc/supervisor/sometitle.ini') \
+          .with_content(Regexp.new Regexp.escape 'command=somecommand')
+    end
+
+    it "should ensure that the service is stopped" do
+      should contain_service('supervisor::sometitle').with_ensure('stopped')
+    end
+  end
+
 end
