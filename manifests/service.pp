@@ -57,7 +57,7 @@ define supervisor::service (
       $config_ensure = file
     }
     stopped: {
-      $autostart = true
+      $autostart = false
       $dir_ensure = 'directory'
       $dir_recurse = false
       $dir_force = false
