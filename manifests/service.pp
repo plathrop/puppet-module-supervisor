@@ -56,6 +56,14 @@ define supervisor::service (
       $service_ensure = 'running'
       $config_ensure = file
     }
+    stopped: {
+      $autostart = false
+      $dir_ensure = 'directory'
+      $dir_recurse = false
+      $dir_force = false
+      $service_ensure = 'stopped'
+      $config_ensure = file
+    }
     default: {
       fail("ensure must be 'present' or 'absent', not ${ensure}")
     }
