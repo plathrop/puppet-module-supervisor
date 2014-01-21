@@ -99,6 +99,8 @@ define supervisor::service (
     provider => supervisor,
   }
 
+  Service[$supervisor::params::system_service] -> Service["supervisor::${name}"]
+
   case $ensure {
     'present', 'running', 'stopped': {
       File[$log_dir] -> File[$conf_file] ~>
