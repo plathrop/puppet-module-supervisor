@@ -12,7 +12,7 @@
 #
 define supervisor::service (
   $command,
-  $ensure                   = present,
+  $ensure                   = 'present',
   $numprocs                 = 1,
   $numprocs_start           = 0,
   $priority                 = 999,
@@ -40,7 +40,7 @@ define supervisor::service (
   include supervisor
 
   case $ensure {
-    absent: {
+    'absent': {
       $autostart = false
       $dir_ensure = 'absent'
       $dir_recurse = true
@@ -48,7 +48,7 @@ define supervisor::service (
       $service_ensure = 'stopped'
       $config_ensure = 'absent'
     }
-    present: {
+    'present', 'running': {
       $autostart = true
       $dir_ensure = 'directory'
       $dir_recurse = false
@@ -56,7 +56,7 @@ define supervisor::service (
       $service_ensure = 'running'
       $config_ensure = file
     }
-    stopped: {
+    'stopped': {
       $autostart = false
       $dir_ensure = 'directory'
       $dir_recurse = false
@@ -65,7 +65,7 @@ define supervisor::service (
       $config_ensure = file
     }
     default: {
-      fail("ensure must be 'present' or 'absent', not ${ensure}")
+      fail("ensure must be 'present', 'running', 'stopped' or 'absent', not ${ensure}")
     }
   }
 
@@ -75,7 +75,9 @@ define supervisor::service (
     $process_name = $name
   }
 
-  file { "/var/log/supervisor/${name}":
+  $log_dir = "/var/log/supervisor/${name}"
+
+  file { $log_dir:
     ensure  => $dir_ensure,
     owner   => $user,
     group   => $group,
@@ -97,12 +99,15 @@ define supervisor::service (
     provider => supervisor,
   }
 
-  if $ensure == 'present' {
-    File["/var/log/supervisor/${name}"] -> File[$conf_file] ~>
-    Class['supervisor::update'] -> Service["supervisor::${name}"]
-  } else { # $ensure == 'absent'
-    # First stop the service, delete the .ini, reload the config, delete the log dir
-    Service["supervisor::${name}"] -> File[$conf_file] ~>
-    Class['supervisor::update'] -> File["/var/log/supervisor/${name}"]
+  case $ensure {
+    'present', 'running', 'stopped': {
+      File[$log_dir] -> File[$conf_file] ~>
+        Class['supervisor::update'] -> Service["supervisor::${name}"]
+    }
+    default: { # absent
+      # First stop the service, delete the .ini, reload the config, delete the log dir
+      Service["supervisor::${name}"] -> File[$conf_file] ~>
+        Class['supervisor::update'] -> File[$log_dir]
+    }
   }
 }
