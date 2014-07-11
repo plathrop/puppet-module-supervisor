@@ -94,20 +94,25 @@ define supervisor::service (
     content => template('supervisor/service.ini.erb'),
   }
 
-  service { "supervisor::${name}":
-    ensure   => $service_ensure,
-    provider => supervisor,
-  }
-
-  case $ensure {
-    'present', 'running', 'stopped': {
-      File[$log_dir] -> File[$conf_file] ~>
-        Class['supervisor::update'] -> Service["supervisor::${name}"]
+  if str2bool($supervisor::manage_service) {
+    File["${supervisor::conf_dir}/${name}${supervisor::conf_ext}"] ~> Class['supervisor::update']
+        
+    service { "supervisor::${name}":
+      ensure   => $service_ensure,
+      provider => supervisor,
     }
-    default: { # absent
-      # First stop the service, delete the .ini, reload the config, delete the log dir
-      Service["supervisor::${name}"] -> File[$conf_file] ~>
-        Class['supervisor::update'] -> File[$log_dir]
+
+    case $ensure {
+      'present', 'running', 'stopped': {
+        File[$log_dir] -> File[$conf_file] ~>
+          Class['supervisor::update'] -> Service["supervisor::${name}"]
+      }
+      default: { # absent
+        # First stop the service, delete the .ini, reload the config, delete the log dir
+        Service["supervisor::${name}"] -> File[$conf_file] ~>
+          Class['supervisor::update'] -> File[$log_dir]
+      }
     }
   }
 }
+
