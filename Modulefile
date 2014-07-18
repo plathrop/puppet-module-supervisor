@@ -8,4 +8,4 @@ description "Puppet module for configuring the 'supervisor' daemon control utili
 project_page 'https://github.com/plathrop/puppet-module-supervisor'
 
 ## Add dependencies, if any:
-# dependency 'user/module', '>= 2.0.7'
+dependency 'puppetlabs/stdlib'
