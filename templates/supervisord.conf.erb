@@ -23,7 +23,7 @@ childlogdir=<%= @childlogdir %>             ; ('AUTO' child log dir, default $TE
 nocleanup=<%= @nocleanup %>
 umask=<%= @umask %>
 <% if @user -%>
-user=<%= user %>
+user=<%= @user %>
 <% end -%>
 <% if @supervisor_environment -%>
 environment=<%= @supervisor_environment %>
