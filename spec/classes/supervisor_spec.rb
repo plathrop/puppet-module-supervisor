@@ -1,12 +1,14 @@
 require 'spec_helper'
 
 describe 'supervisor' do
+ context "debian family" do
   let (:facts) { {
     :osfamily => 'debian',
   } }
 
   context "with defaults" do
     it {
+      should create_file('/etc/supervisor/supervisord.conf')
       should create_file('/etc/logrotate.d/supervisor')
     }
   end
@@ -38,4 +40,28 @@ describe 'supervisor' do
       should create_file('/etc/supervisor/supervisord.conf').with_content(%r{files = .* /etc/someconfig /etc/somewhereelse/\*\.conf$})
     }
   end
+
+ end
+
+ context "redhat family" do
+  let (:facts) { {
+    :osfamily => 'redhat',
+  } }
+
+  context "with defaults" do
+    it {
+      should create_file('/etc/supervisord.conf')
+      should create_file('/etc/logrotate.d/supervisor')
+    }
+  end
+
+  context "with include_files" do
+    let(:params) { {
+      :include_files     => ['/etc/someconfig', '/etc/somewhereelse/*.conf'],
+    } }
+    it {
+      should create_file('/etc/supervisord.conf').with_content(%r{files = .* /etc/someconfig /etc/somewhereelse/\*\.conf$})
+    }
+  end
+ end
 end
