@@ -19,15 +19,6 @@ Example usage:
       require     => [ Package['scribe'], User['scribe'] ];
   }
 
-To use default debian paths:
-
-.. code-block:: puppet
-
-  class { 'supervisor':
-    conf_dir => '/etc/supervisor/conf.d',
-    conf_ext => '.conf',
-  }
-
 Running tests:
 
 .. code-block:: sh

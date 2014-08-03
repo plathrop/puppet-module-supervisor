@@ -10,15 +10,6 @@ describe 'supervisor::service' do
   } }
 
   context "with debian configuration" do
-    let (:pre_condition) {
-      <<-PUPPET
-        class { 'supervisor':
-          conf_dir => '/etc/supervisor/conf.d',
-          conf_ext => '.conf',
-        }
-      PUPPET
-    }
-
 
     it "should include /etc/supervisor/conf.d/*.conf in /etc/supervisor/supervisord.conf" do
       should create_file('/etc/supervisor/supervisord.conf') \

@@ -2,8 +2,8 @@ class supervisor::params {
   case $::osfamily {
     'debian': {
       $conf_file      = '/etc/supervisor/supervisord.conf'
-      $conf_dir       = '/etc/supervisor'
-      $conf_ext       = '.ini'
+      $conf_dir       = '/etc/supervisor/conf.d'
+      $conf_ext       = '.conf'
       $system_service = 'supervisor'
       $package        = 'supervisor'
     }
