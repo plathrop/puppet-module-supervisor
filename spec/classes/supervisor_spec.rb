@@ -8,6 +8,25 @@ describe 'supervisor' do
   context "with defaults" do
     it {
       should create_file('/etc/logrotate.d/supervisor')
+      should create_file('/etc/supervisor/supervisord.conf') \
+        .with_content(/file=\/var\/run\/supervisor\.sock/) \
+        .with_content(/chmod=0700/)
+        .with_notify('Service[supervisor]')
+    }
+  end
+
+  context "with unix server params" do
+    let (:params) { {
+      :unix_server_file  => '/tmp/supervisor.sock',
+      :unix_server_chmod => '0770',
+      :unix_server_chown => 'root:supervisor'
+    } }
+    it {
+      should create_file('/etc/supervisor/supervisord.conf') \
+        .with_content(/file=\/tmp\/supervisor\.sock/) \
+        .with_content(/chmod=0770/)
+        .with_content(/chown=root:supervisor/)
+        .with_notify('Service[supervisor]')
     }
   end
 
@@ -35,7 +54,8 @@ describe 'supervisor' do
       :include_files     => ['/etc/someconfig', '/etc/somewhereelse/*.conf'],
     } }
     it {
-      should create_file('/etc/supervisor/supervisord.conf').with_content(%r{files = .* /etc/someconfig /etc/somewhereelse/\*\.conf$})
+      should create_file('/etc/supervisor/supervisord.conf') \
+        .with_content(%r{files = .* /etc/someconfig /etc/somewhereelse/\*\.conf$})
     }
   end
 end
