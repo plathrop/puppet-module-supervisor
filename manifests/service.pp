@@ -12,7 +12,7 @@
 #
 define supervisor::service (
   $command,
-  $ensure                   = 'present',
+  $ensure                   = 'running',
   $numprocs                 = 1,
   $numprocs_start           = 0,
   $priority                 = 999,
