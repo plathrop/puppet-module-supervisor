@@ -84,7 +84,7 @@ define supervisor::service (
     mode    => '0750',
     recurse => $dir_recurse,
     force   => $dir_force,
-    require => Class['supervisor'],
+    require => File['/var/log/supervisor'],
   }
 
   $conf_file = "${supervisor::conf_dir}/${name}${supervisor::conf_ext}"
