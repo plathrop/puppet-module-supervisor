@@ -52,3 +52,9 @@ files = <%= @conf_dir -%>/*<%= @conf_ext -%>
 <% end -%>
 <% end -%>
 
+<% if @extra_inline_config -%>
+<% @extra_inline_config.each do |inline_config| -%>
+<%= inline_config %>
+<% end -%>
+<% end -%>
+

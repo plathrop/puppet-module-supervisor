@@ -144,11 +144,11 @@ class supervisor(
   $recurse_config_dir       = false,
   $conf_dir                 = $supervisor::params::conf_dir,
   $conf_ext                 = $supervisor::params::conf_ext,
-  $include_files            = []
+  $include_files            = [],
+  $extra_inline_config      = []
 ) inherits supervisor::params {
 
   include supervisor::update
-
   case $ensure {
     present: {
       if $autoupgrade == true {
