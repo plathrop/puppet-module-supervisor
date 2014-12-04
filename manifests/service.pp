@@ -12,7 +12,7 @@
 #
 define supervisor::service (
   $command,
-  $ensure                   = 'present',
+  $ensure                   = 'running',
   $numprocs                 = 1,
   $numprocs_start           = 0,
   $priority                 = 999,
@@ -48,7 +48,15 @@ define supervisor::service (
       $service_ensure = 'stopped'
       $config_ensure = 'absent'
     }
-    'present', 'running': {
+    'present': {
+      $autostart = true
+      $dir_ensure = 'directory'
+      $dir_recurse = false
+      $dir_force = false
+      $service_ensure = undef
+      $config_ensure = file
+    }
+    'running': {
       $autostart = true
       $dir_ensure = 'directory'
       $dir_recurse = false
@@ -94,17 +102,23 @@ define supervisor::service (
     content => template('supervisor/service.ini.erb'),
   }
 
-  service { "supervisor::${name}":
-    ensure   => $service_ensure,
-    provider => supervisor,
+  if $service_ensure {
+    service { "supervisor::${name}":
+      ensure   => $service_ensure,
+      provider => supervisor,
+    }
   }
 
   Service[$supervisor::params::system_service] -> Service["supervisor::${name}"]
 
   case $ensure {
-    'present', 'running', 'stopped': {
+    'running', 'stopped': {
       File[$log_dir] -> File[$conf_file] ~>
         Class['supervisor::update'] -> Service["supervisor::${name}"]
+    }
+    'present': {
+      File[$log_dir] -> File[$conf_file] ~>
+        Class['supervisor::update']
     }
     default: { # absent
       # First stop the service, delete the .ini, reload the config, delete the log dir
