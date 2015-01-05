@@ -13,6 +13,7 @@
 define supervisor::service (
   $command,
   $ensure                   = 'present',
+  $type                     = 'program',
   $numprocs                 = 1,
   $numprocs_start           = 0,
   $priority                 = 999,
@@ -35,7 +36,8 @@ define supervisor::service (
   $stderr_logfile_maxsize   = '250MB',
   $stderr_logfile_keep      = 10,
   $environment              = undef,
-  $umask                    = undef
+  $umask                    = undef,
+  $ini_append               = {}
 ) {
   include supervisor
 
