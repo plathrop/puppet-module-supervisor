@@ -50,7 +50,7 @@ Puppet::Type.type(:service).provide :supervisor, :parent => :base do
   def supervisorctl_args
     processes = processes().select { |process| process[:program_name] == self.program_name }
     args = processes.map do |process|
-      if process[:group_name].empty?
+      if process[:group_name] == nil || process[:group_name].empty?
         "#{process[:process_name]}"
       else
         "#{process[:group_name]}:#{process[:process_name]}"
