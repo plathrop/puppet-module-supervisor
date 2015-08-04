@@ -22,7 +22,7 @@ logfile_maxbytes=<%= @logfile_maxbytes %>   ; (max main logfile bytes b4 rotatio
 logfile_backups=<%= @logfile_backups %>     ; (num of main logfile rotation backups;default 10)
 loglevel=<%= @log_level %>                  ; (log level;default info; others: debug,warn,trace)
 pidfile=/var/run/supervisord.pid            ; (supervisord pidfile;default supervisord.pid)
-nodaemon=false                              ; (start in foreground if true;default false)
+nodaemon=<%= @nodaemon %>                   ; (start in foreground if true;default false)
 minfds=<%= @minfds %>                       ; (min. avail startup file descriptors;default 1024)
 minprocs=<%= @minprocs %>                   ; (min. avail process descriptors;default 200)
 childlogdir=<%= @childlogdir %>             ; ('AUTO' child log dir, default $TEMP)
