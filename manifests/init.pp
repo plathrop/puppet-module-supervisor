@@ -7,6 +7,10 @@
 #     Ensure if present or absent.
 #     Default: present
 #
+#   [*nodaemon*]
+#     Run supervisord in the foreground.
+#     Default: false
+#
 #   [*autoupgrade*]
 #     Upgrade package automatically, if there is a newer version.
 #     Default: false
@@ -118,6 +122,7 @@
 #
 class supervisor(
   $ensure                   = 'present',
+  $nodaemon                 = false,
   $autoupgrade              = false,
   $service_ensure           = 'running',
   $service_enable           = true,

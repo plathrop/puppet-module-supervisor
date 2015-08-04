@@ -13,6 +13,7 @@
 define supervisor::service (
   $command,
   $ensure                   = 'present',
+  $enable                   = true,
   $type                     = 'program',
   $numprocs                 = 1,
   $numprocs_start           = 0,
@@ -59,7 +60,7 @@ define supervisor::service (
       $config_ensure = file
     }
     'stopped': {
-      $autostart = false
+      $autostart = $enable
       $dir_ensure = 'directory'
       $dir_recurse = false
       $dir_force = false
