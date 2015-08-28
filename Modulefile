@@ -1,5 +1,5 @@
 name    'jimdo-supervisor'
-version '0.2.0'
+version '0.2.1'
 source 'https://github.com/plathrop/puppet-module-supervisor'
 author 'Paul Lathrop <paul@tertiusfamily.net>, Ilya Margolin <ilya@jimdo.com>, Sören Krings <soeren@jimdo.com>'
 license '2 clause BSD, see LICENSE'
