@@ -40,8 +40,8 @@ stderr_logfile=/var/log/supervisor/<%= @name -%>/<%= @name -%>.err
 <% end -%>
 stderr_logfile_maxbytes=<%= @stderr_logfile_maxsize %>
 stderr_logfile_backups=<%= @stderr_logfile_keep %>
-<% if @environment -%>
-environment=<%= @environment %>
+<% if @env_string -%>
+environment=<%= @env_string %>
 <% end -%>
 <% if @umask %>
 umask=<%= @umask %>

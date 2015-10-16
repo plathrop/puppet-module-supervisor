@@ -1,6 +1,36 @@
 # Actions:
 #   Set up a daemon to be run by supervisor
 #
+# See documentation here for more parameter information:
+# http://supervisord.org/configuration.html#program-x-section-settings
+#
+# Parameters:
+#   [*command*]
+#     Required
+#
+#   [*ensure*]
+#     Ensure if present or absent.
+#     Default: present
+#
+#   [*enable*]
+#     Start service at boot.
+#     Default: true
+#
+#   [*type*]
+#     Service type     
+#     Default: program
+#
+#   [*numprocs*]
+#     Supervisor will start as many instances of this program as named by numprocs
+#     Default: 1
+#
+#   ...
+#
+#   [*environment*]
+#     Environment variables in a comma-separated string, or a hash or array,
+#     which will be converted to a comma-separated string
+#     Default: undef
+#
 # Sample Usage:
 #  supervisor::service { 'organizational_worker':
 #    command         => '/usr/bin/php /var/www/vhosts/site/gearman/worker.php',
@@ -8,6 +38,7 @@
 #    numprocs_start  => 1,
 #    user            => 'org_user',
 #    group           => 'org_group',
+#    environment     => "KEY1='value1',KEY2='value2'"
 #  }
 #
 define supervisor::service (
@@ -91,6 +122,14 @@ define supervisor::service (
   }
 
   $conf_file = "${supervisor::conf_dir}/${name}${supervisor::conf_ext}"
+
+  if is_hash($environment) {
+    $env_string = hash2csv($environment)
+  } elsif is_array($environment) {
+    $env_string = array2csv($environment)
+  } else {
+    $env_string = $environment
+  }
 
   file { $conf_file:
     ensure  => $config_ensure,
