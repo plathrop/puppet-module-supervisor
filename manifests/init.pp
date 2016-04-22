@@ -187,9 +187,17 @@ class supervisor(
   }
 
   if ! defined(Package[$supervisor::params::package]) {
-    package { $supervisor::params::package:
-      ensure   => $package_ensure,
-      provider => $provider,
+    if $provider == 'pip' {
+      package { $supervisor::params::package:
+        ensure   => $package_ensure,
+        provider => $provider,
+        require  => Package['python-pip'],
+      }
+    }
+    else {
+      package { $supervisor::params::package:
+        ensure   => $package_ensure,
+      }
     }
   }
 
