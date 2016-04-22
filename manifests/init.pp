@@ -121,6 +121,7 @@
 #   Check that readme.
 #
 class supervisor(
+  $provider                 = $supervisor::params::provider,
   $ensure                   = 'present',
   $nodaemon                 = false,
   $autoupgrade              = false,
