@@ -218,6 +218,14 @@ class supervisor(
     require => Package[$supervisor::params::package],
   }
 
+  if $provider == 'pip' {
+    file { '/usr/lib/systemd/system/supervisord.service':
+      ensure  => $file_ensure,
+      source  => 'puppet:///modules/supervisor/systemd',
+      require => Package[$supervisor::params::package],
+    }
+  }
+
   file { $supervisor::params::conf_file:
     ensure  => $file_ensure,
     content => template('supervisor/supervisord.conf.erb'),
