@@ -188,7 +188,8 @@ class supervisor(
 
   if ! defined(Package[$supervisor::params::package]) {
     package { $supervisor::params::package:
-      ensure => $package_ensure,
+      ensure   => $package_ensure,
+      provider => $provider,
     }
   }
 
