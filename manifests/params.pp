@@ -7,6 +7,7 @@ class supervisor::params {
       $system_service = 'supervisor'
       $package        = 'supervisor'
       $provider       = 'apt'
+      $systemd_conf   = '/usr/lib/systemd/system/supervisord.service'
     }
     'redhat': {
       $conf_file      = '/etc/supervisord.conf'
@@ -15,6 +16,7 @@ class supervisor::params {
       $system_service = 'supervisord'
       $package        = 'supervisor'
       $provider       = 'yum'
+      $systemd_conf    = '/usr/lib/systemd/system/supervisord.service'
     }
     default: {
       fail("Unsupported platform: ${::osfamily}")

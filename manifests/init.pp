@@ -121,7 +121,6 @@
 #   Check that readme.
 #
 class supervisor(
-  $provider                 = $supervisor::params::provider,
   $ensure                   = 'present',
   $nodaemon                 = false,
   $autoupgrade              = false,
@@ -150,6 +149,8 @@ class supervisor(
   $recurse_config_dir       = false,
   $conf_dir                 = $supervisor::params::conf_dir,
   $conf_ext                 = $supervisor::params::conf_ext,
+  $provider                 = $supervisor::params::provider,
+  $systemd_conf             = $supervisor::params::systemd_conf,
   $include_files            = []
 ) inherits supervisor::params {
 
@@ -193,6 +194,12 @@ class supervisor(
         provider => $provider,
         require  => Package['python-pip'],
       }
+
+      file { $supervisor::params::systemd_conf:
+        ensure  => $file_ensure,
+        source  => 'puppet:///modules/supervisor/systemd',
+        require => Package[$supervisor::params::package],
+      }
     }
     else {
       package { $supervisor::params::package:
@@ -218,14 +225,6 @@ class supervisor(
     require => Package[$supervisor::params::package],
   }
 
-  if $provider == 'pip' {
-    file { '/usr/lib/systemd/system/supervisord.service':
-      ensure  => $file_ensure,
-      source  => 'puppet:///modules/supervisor/systemd',
-      require => Package[$supervisor::params::package],
-    }
-  }
-
   file { $supervisor::params::conf_file:
     ensure  => $file_ensure,
     content => template('supervisor/supervisord.conf.erb'),
@@ -245,6 +244,9 @@ class supervisor(
     ensure     => $service_ensure_real,
     enable     => $service_enable,
     hasrestart => true,
-    require    => File[$supervisor::params::conf_file],
+    require    => [
+      File[$supervisor::params::conf_file],
+      File[$supervisor::params::systemd_conf],
+    ],
   }
 }
