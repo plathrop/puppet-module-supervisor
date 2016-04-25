@@ -240,13 +240,23 @@ class supervisor(
     }
   }
 
-  service { $supervisor::params::system_service:
-    ensure     => $service_ensure_real,
-    enable     => $service_enable,
-    hasrestart => true,
-    require    => [
-      File[$supervisor::params::conf_file],
-      File[$supervisor::params::systemd_conf],
-    ],
+  if $provider == 'pip' {
+    service { $supervisor::params::system_service:
+      ensure     => $service_ensure_real,
+      enable     => $service_enable,
+      hasrestart => true,
+      require    => [
+        File[$supervisor::params::conf_file],
+        File[$supervisor::params::systemd_conf],
+      ],
+    }
+  }
+  else {
+    service { $supervisor::params::system_service:
+      ensure     => $service_ensure_real,
+      enable     => $service_enable,
+      hasrestart => true,
+      require    => File[$supervisor::params::conf_file],
+    }
   }
 }
