@@ -7,7 +7,7 @@ class supervisor::params {
       $system_service = 'supervisor'
       $package        = 'supervisor'
       $provider       = 'apt'
-      $systemd_conf   = '/usr/lib/systemd/system/supervisord.service'
+      $systemd_conf   = '/etc/init.d/supervisor'
     }
     'redhat': {
       $conf_file      = '/etc/supervisord.conf'

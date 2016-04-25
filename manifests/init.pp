@@ -195,10 +195,31 @@ class supervisor(
         require  => Package['python-pip'],
       }
 
-      file { $supervisor::params::systemd_conf:
-        ensure  => $file_ensure,
-        source  => 'puppet:///modules/supervisor/systemd',
-        require => Package[$supervisor::params::package],
+      case $::osfamily {
+        'debian': {
+          file { '/etc/supervisor':
+            ensure  => $dir_ensure,
+            purge   => true,
+            recurse => $recurse_config_dir,
+            require => Package[$supervisor::params::package],
+          }
+
+          file { $supervisor::params::systemd_conf:
+            ensure  => $file_ensure,
+            source  => 'puppet:///modules/supervisor/systemd_debian',
+            mode    => 0755,
+            owner   => 'root',
+            group   => 'root',
+            require => Package[$supervisor::params::package],
+          }
+        }
+        'redhat': {
+          file { $supervisor::params::systemd_conf:
+            ensure  => $file_ensure,
+            source  => 'puppet:///modules/supervisor/systemd_redhat',
+            require => Package[$supervisor::params::package],
+          }
+        }
       }
     }
     else {
