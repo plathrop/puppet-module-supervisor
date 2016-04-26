@@ -197,13 +197,6 @@ class supervisor(
 
       case $::osfamily {
         'debian': {
-          file { '/etc/supervisor':
-            ensure  => $dir_ensure,
-            purge   => true,
-            recurse => $recurse_config_dir,
-            require => Package[$supervisor::params::package],
-          }
-
           file { $supervisor::params::systemd_conf:
             ensure  => $file_ensure,
             source  => 'puppet:///modules/supervisor/systemd_debian',
@@ -213,10 +206,29 @@ class supervisor(
             require => Package[$supervisor::params::package],
           }
 
+          file { '/etc/supervisor':
+            ensure  => $dir_ensure,
+            purge   => true,
+            recurse => $recurse_config_dir,
+            require => Package[$supervisor::params::package],
+          }
+
           file { '/etc/supervisord.conf':
             ensure  => link,
             target  => $supervisor::params::conf_file,
             require => File[$supervisor::params::conf_file],
+          }
+
+          file { '/usr/bin/supervisord':
+            ensure  => link,
+            target  => '/usr/local/bin/supervisord',
+            require => Package[$supervisor::params::package],
+          }
+
+          file { '/usr/bin/supervisorctl':
+            ensure  => link,
+            target  => '/usr/local/bin/supervisorctl',
+            require => Package[$supervisor::params::package],
           }
         }
         'redhat': {
