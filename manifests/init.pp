@@ -150,7 +150,6 @@ class supervisor(
   $conf_dir                 = $supervisor::params::conf_dir,
   $conf_ext                 = $supervisor::params::conf_ext,
   $provider                 = $supervisor::params::provider,
-  $systemd_conf             = $supervisor::params::systemd_conf,
   $include_files            = []
 ) inherits supervisor::params {
 
@@ -197,9 +196,9 @@ class supervisor(
 
       case $::osfamily {
         'debian': {
-          file { $supervisor::params::systemd_conf:
+          file { $supervisor::params::service_conf:
             ensure  => $file_ensure,
-            source  => 'puppet:///modules/supervisor/systemd_debian',
+            source  => 'puppet:///modules/supervisor/service_debian',
             mode    => 0755,
             owner   => 'root',
             group   => 'root',
@@ -232,9 +231,9 @@ class supervisor(
           }
         }
         'redhat': {
-          file { $supervisor::params::systemd_conf:
+          file { $supervisor::params::service_conf:
             ensure  => $file_ensure,
-            source  => 'puppet:///modules/supervisor/systemd_redhat',
+            source  => 'puppet:///modules/supervisor/service_redhat',
             require => Package[$supervisor::params::package],
           }
         }
@@ -286,7 +285,7 @@ class supervisor(
       hasrestart => true,
       require    => [
         File[$supervisor::params::conf_file],
-        File[$supervisor::params::systemd_conf],
+        File[$supervisor::params::service_conf],
       ],
     }
   }
