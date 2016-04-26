@@ -174,12 +174,14 @@ class supervisor(
 
       $dir_ensure = 'directory'
       $file_ensure = 'file'
+      $link_ensure = 'link'
     }
     absent: {
       $package_ensure = 'absent'
       $service_ensure_real = 'stopped'
       $dir_ensure = 'absent'
       $file_ensure = 'absent'
+      $link_ensure = 'absent'
     }
     default: {
       fail('ensure parameter must be present or absent')
@@ -213,19 +215,19 @@ class supervisor(
           }
 
           file { '/etc/supervisord.conf':
-            ensure  => link,
+            ensure  => $link_ensure,
             target  => $supervisor::params::conf_file,
             require => File[$supervisor::params::conf_file],
           }
 
           file { '/usr/bin/supervisord':
-            ensure  => link,
+            ensure  => $link_ensure,
             target  => '/usr/local/bin/supervisord',
             require => Package[$supervisor::params::package],
           }
 
           file { '/usr/bin/supervisorctl':
-            ensure  => link,
+            ensure  => $link_ensure,
             target  => '/usr/local/bin/supervisorctl',
             require => Package[$supervisor::params::package],
           }
