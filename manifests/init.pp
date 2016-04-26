@@ -212,6 +212,12 @@ class supervisor(
             group   => 'root',
             require => Package[$supervisor::params::package],
           }
+
+          file { '/etc/supervisord.conf':
+            ensure  => link,
+            target  => $supervisor::params::conf_file,
+            require => File[$supervisor::params::conf_file],
+          }
         }
         'redhat': {
           file { $supervisor::params::systemd_conf:
