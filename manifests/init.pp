@@ -150,7 +150,8 @@ class supervisor(
   $conf_dir                 = $supervisor::params::conf_dir,
   $conf_ext                 = $supervisor::params::conf_ext,
   $provider                 = $supervisor::params::provider,
-  $include_files            = []
+  $include_files            = [],
+  $pip_ensure               = ''
 ) inherits supervisor::params {
 
   include supervisor::update
@@ -191,7 +192,7 @@ class supervisor(
   if ! defined(Package[$supervisor::params::package]) {
     if $provider == 'pip' {
       package { $supervisor::params::package:
-        ensure   => $package_ensure,
+        ensure   => $pip_ensure,
         provider => $provider,
         require  => Package['python-pip'],
       }
