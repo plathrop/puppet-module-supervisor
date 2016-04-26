@@ -183,6 +183,7 @@ class supervisor(
       $dir_ensure = 'absent'
       $file_ensure = 'absent'
       $link_ensure = 'absent'
+      $pip_ensure = 'absent'
     }
     default: {
       fail('ensure parameter must be present or absent')
