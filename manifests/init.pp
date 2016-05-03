@@ -149,7 +149,9 @@ class supervisor(
   $recurse_config_dir       = false,
   $conf_dir                 = $supervisor::params::conf_dir,
   $conf_ext                 = $supervisor::params::conf_ext,
-  $include_files            = []
+  $provider                 = $supervisor::params::provider,
+  $include_files            = [],
+  $pip_ensure               = ''
 ) inherits supervisor::params {
 
   include supervisor::update
@@ -173,12 +175,15 @@ class supervisor(
 
       $dir_ensure = 'directory'
       $file_ensure = 'file'
+      $link_ensure = 'link'
     }
     absent: {
       $package_ensure = 'absent'
       $service_ensure_real = 'stopped'
       $dir_ensure = 'absent'
       $file_ensure = 'absent'
+      $link_ensure = 'absent'
+      $pip_ensure = 'absent'
     }
     default: {
       fail('ensure parameter must be present or absent')
@@ -186,8 +191,62 @@ class supervisor(
   }
 
   if ! defined(Package[$supervisor::params::package]) {
-    package { $supervisor::params::package:
-      ensure => $package_ensure,
+    if $provider == 'pip' {
+      package { $supervisor::params::package:
+        ensure   => $pip_ensure,
+        provider => $provider,
+        require  => Package['python-pip'],
+      }
+
+      case $::osfamily {
+        'debian': {
+          file { $supervisor::params::service_conf:
+            ensure  => $file_ensure,
+            source  => 'puppet:///modules/supervisor/service_debian',
+            mode    => 0755,
+            owner   => 'root',
+            group   => 'root',
+            require => Package[$supervisor::params::package],
+          }
+
+          file { '/etc/supervisor':
+            ensure  => $dir_ensure,
+            purge   => true,
+            recurse => $recurse_config_dir,
+            require => Package[$supervisor::params::package],
+          }
+
+          file { '/etc/supervisord.conf':
+            ensure  => $link_ensure,
+            target  => $supervisor::params::conf_file,
+            require => File[$supervisor::params::conf_file],
+          }
+
+          file { '/usr/bin/supervisord':
+            ensure  => $link_ensure,
+            target  => '/usr/local/bin/supervisord',
+            require => Package[$supervisor::params::package],
+          }
+
+          file { '/usr/bin/supervisorctl':
+            ensure  => $link_ensure,
+            target  => '/usr/local/bin/supervisorctl',
+            require => Package[$supervisor::params::package],
+          }
+        }
+        'redhat': {
+          file { $supervisor::params::service_conf:
+            ensure  => $file_ensure,
+            source  => 'puppet:///modules/supervisor/service_redhat',
+            require => Package[$supervisor::params::package],
+          }
+        }
+      }
+    }
+    else {
+      package { $supervisor::params::package:
+        ensure   => $package_ensure,
+      }
     }
   }
 
@@ -223,10 +282,23 @@ class supervisor(
     }
   }
 
-  service { $supervisor::params::system_service:
-    ensure     => $service_ensure_real,
-    enable     => $service_enable,
-    hasrestart => true,
-    require    => File[$supervisor::params::conf_file],
+  if $provider == 'pip' {
+    service { $supervisor::params::system_service:
+      ensure     => $service_ensure_real,
+      enable     => $service_enable,
+      hasrestart => true,
+      require    => [
+        File[$supervisor::params::conf_file],
+        File[$supervisor::params::service_conf],
+      ],
+    }
+  }
+  else {
+    service { $supervisor::params::system_service:
+      ensure     => $service_ensure_real,
+      enable     => $service_enable,
+      hasrestart => true,
+      require    => File[$supervisor::params::conf_file],
+    }
   }
 }
