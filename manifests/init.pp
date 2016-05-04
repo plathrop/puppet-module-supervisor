@@ -239,6 +239,11 @@ class supervisor(
             ensure  => $file_ensure,
             source  => 'puppet:///modules/supervisor/service_redhat',
             require => Package[$supervisor::params::package],
+          } ~>
+
+          exec { 'systemd-daemon-reload':
+            command     => '/usr/bin/systemctl daemon-reload',
+            refreshonly => true,
           }
         }
       }
