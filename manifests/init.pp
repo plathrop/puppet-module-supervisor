@@ -203,7 +203,7 @@ class supervisor(
           file { $supervisor::params::service_conf:
             ensure  => $file_ensure,
             source  => 'puppet:///modules/supervisor/service_debian',
-            mode    => 0755,
+            mode    => '0755',
             owner   => 'root',
             group   => 'root',
             require => Package[$supervisor::params::package],
