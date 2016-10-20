@@ -84,7 +84,7 @@ define supervisor::service (
     ensure  => $dir_ensure,
     owner   => $user,
     group   => $group,
-    mode    => '0750',
+    mode    => '0755',
     recurse => $dir_recurse,
     force   => $dir_force,
     require => File['/var/log/supervisor'],
