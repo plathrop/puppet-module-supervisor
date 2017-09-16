@@ -1,3 +1,19 @@
+=========================
+Puppet Module: Supervisor
+=========================
+----------
+Deprecated
+----------
+
+**Please Note: This code is here for historical purposes only.** I
+ have not used this module in production for many years. Although it
+ is still in use by others, and occasional contributions come in, you
+ use it at your own risk. I merge in contributions if they look
+ appropriate, but do not provide support or maintenance.
+
+Module Information
+==================
+
 Puppet module for configuring the 'supervisor' daemon control
 utility. Currently tested on Debian, Ubuntu, and Fedora.
 
